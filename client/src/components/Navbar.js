@@ -1,3 +1,4 @@
+// client/src/components/Navbar.js
 import React from 'react';
 import { Navbar as BootstrapNavbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
@@ -11,6 +12,9 @@ const Navbar = () => {
     logout();
     navigate('/'); // Redirect to home after logout
   };
+
+  // Check if user is admin
+  const isAdmin = user && user.role === 'admin';
 
   return (
     <BootstrapNavbar expand="lg" className="custom-navbar" fixed="top">
@@ -41,6 +45,13 @@ const Navbar = () => {
             <Nav.Link as={Link} to="/contact">
               <i className="fas fa-envelope me-1"></i>Contact
             </Nav.Link>
+
+            {/* Admin Dashboard Link - Only show for admin users */}
+            {isAdmin && (
+              <Nav.Link as={Link} to="/admin">
+                <i className="fas fa-cog me-1"></i>Admin
+              </Nav.Link>
+            )}
             
             {user ? (
               <NavDropdown 
@@ -48,6 +59,7 @@ const Navbar = () => {
                   <span>
                     <i className="fas fa-user me-1"></i>
                     {user.username}
+                    {isAdmin && <small className="badge bg-warning text-dark ms-1">Admin</small>}
                   </span>
                 } 
                 id="user-dropdown"
@@ -55,6 +67,17 @@ const Navbar = () => {
                 <NavDropdown.Item as={Link} to="/profile">
                   <i className="fas fa-user me-1"></i>Profile
                 </NavDropdown.Item>
+                
+                {/* Admin Dashboard in dropdown as well */}
+                {isAdmin && (
+                  <>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item as={Link} to="/admin">
+                      <i className="fas fa-cog me-1"></i>Admin Dashboard
+                    </NavDropdown.Item>
+                  </>
+                )}
+                
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={handleLogout}>
                   <i className="fas fa-sign-out-alt me-1"></i>Logout

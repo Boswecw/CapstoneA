@@ -15,6 +15,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminDashboard from './components/AdminDashboard';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
@@ -36,11 +37,15 @@ function App() {
               <Route path="/pet/:id" element={<PetDetail />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/profile" element={
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route
+               path="/profile" 
+               element={
             <ProtectedRoute>
                   <Profile />
                 </ProtectedRoute>
-              } />
+              } 
+           />
               <Route path="*" element={<div className="text-center py-5"><h2>404 - Page Not Found</h2></div>} />
             </Routes>
           </main>
