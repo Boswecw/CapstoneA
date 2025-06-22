@@ -3,13 +3,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Navbar as BootstrapNavbar, Nav, Container, NavDropdown, Badge } from 'react-bootstrap';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-// Removed useCart import since cartCount is not used here
+
 import CartIcon from './Cart/CartIcon';
 import CartDropdown from './Cart/CartDropdown';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
-  // Removed unused cartCount
   const navigate = useNavigate();
   const location = useLocation();
   

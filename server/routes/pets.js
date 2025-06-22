@@ -1,4 +1,5 @@
-// server/routes/pets.js (Updated with validation)
+// server/routes/pets.js
+
 const express = require('express');
 const router = express.Router();
 const petController = require('../controllers/petController');
@@ -13,46 +14,52 @@ const {
   generalRateLimit
 } = require('../middleware/validation');
 
-// Apply general rate limiting to all pet routes
+// ✅ Apply rate limiting and sanitization globally to pet routes
 router.use(generalRateLimit);
-
-// Apply input sanitization to all routes
 router.use(sanitizeInput);
 
-// Public routes
+// 🟢 Public Routes
 router.get('/', petController.getAllPets);
 router.get('/featured', petController.getFeaturedPets);
 router.get('/type/:type', petController.getPetsByType);
 router.get('/:id', petController.getPetById);
 
-// Protected routes (require authentication)
-router.post('/', 
-  auth, 
-  validatePet, 
-  handleValidationErrors, 
+// 🔒 Protected Routes (authentication required)
+router.post(
+  '/',
+  auth,
+  validatePet,
+  handleValidationErrors,
   petController.createPet
 );
 
-router.put('/:id', 
-  auth, 
-  validatePetUpdate, 
-  handleValidationErrors, 
+router.put(
+  '/:id',
+  auth,
+  validatePetUpdate,
+  handleValidationErrors,
   petController.updatePet
 );
 
-router.delete('/:id', auth, petController.deletePet);
+router.delete(
+  '/:id',
+  auth,
+  petController.deletePet
+);
 
-router.post('/:id/vote', 
-  auth, 
-  validateVote, 
-  handleValidationErrors, 
+router.post(
+  '/:id/vote',
+  auth,
+  validateVote,
+  handleValidationErrors,
   petController.votePet
 );
 
-router.post('/:id/rate', 
-  auth, 
-  validateRating, 
-  handleValidationErrors, 
+router.post(
+  '/:id/rate',
+  auth,
+  validateRating,
+  handleValidationErrors,
   petController.ratePet
 );
 

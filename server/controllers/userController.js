@@ -1,6 +1,8 @@
+// server/controllers/userController.js
 const User = require('../models/User');
-const Pet = require('../models/Pet');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
 
 // Generate JWT token
 const generateToken = (userId) => {
@@ -10,23 +12,32 @@ const generateToken = (userId) => {
 };
 
 // Register user
-const register = async (req, res) => {
+const registerUser = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
     const { username, email, password, firstName, lastName } = req.body;
-    
+
     // Check if user already exists
-    const existingUser = await User.findOne({
-      $or: [{ email }, { username }]
+    const existingUser = await User.findOne({ 
+      $or: [{ email }, { username }] 
     });
-    
+
     if (existingUser) {
       return res.status(400).json({
         success: false,
         message: 'User with this email or username already exists'
       });
     }
-    
-    // Create new user
+
+    // Create user
     const user = new User({
       username,
       email,
@@ -36,12 +47,12 @@ const register = async (req, res) => {
         lastName
       }
     });
-    
+
     await user.save();
-    
+
     // Generate token
     const token = generateToken(user._id);
-    
+
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
@@ -57,40 +68,59 @@ const register = async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(400).json({
+    console.error('Registration error:', error);
+    res.status(500).json({
       success: false,
-      message: 'Error registering user',
-      error: error.message
+      message: 'Server error during registration'
     });
   }
 };
 
 // Login user
-const login = async (req, res) => {
+const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    console.log('🔍 Login attempt for:', req.body.email);
     
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const { email, password } = req.body;
+
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({
+      console.log('❌ User not found:', email);
+      return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
       });
     }
-    
+
+    console.log('✅ User found:', user.email);
+
     // Check password
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
-      return res.status(400).json({
+      console.log('❌ Invalid password for:', email);
+      return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
       });
     }
-    
+
+    console.log('✅ Password valid for:', email);
+
     // Generate token
     const token = generateToken(user._id);
-    
+
+    console.log('✅ Login successful for:', email);
+
     res.json({
       success: true,
       message: 'Login successful',
@@ -106,150 +136,80 @@ const login = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error logging in',
-      error: error.message
+      message: 'Server error during login'
     });
   }
 };
 
 // Get user profile
-const getProfile = async (req, res) => {
+const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id)
-      .select('-password')
-      .populate('favoritesPets');
+    const user = await User.findById(req.user.id).select('-password');
     
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
     res.json({
       success: true,
-      data: user
+      data: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        profile: user.profile
+      }
     });
   } catch (error) {
+    console.error('Get profile error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching profile',
-      error: error.message
+      message: 'Server error'
     });
   }
 };
 
 // Update user profile
-const updateProfile = async (req, res) => {
+const updateUserProfile = async (req, res) => {
   try {
-    const updates = req.body;
-    
-    // Remove sensitive fields that shouldn't be updated here
-    delete updates.password;
-    delete updates.email;
-    delete updates.role;
-    
+    const { firstName, lastName, phone, address } = req.body;
+
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { $set: updates },
+      {
+        $set: {
+          'profile.firstName': firstName,
+          'profile.lastName': lastName,
+          'profile.phone': phone,
+          'profile.address': address
+        }
+      },
       { new: true, runValidators: true }
     ).select('-password');
-    
+
     res.json({
       success: true,
       message: 'Profile updated successfully',
       data: user
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: 'Error updating profile',
-      error: error.message
-    });
-  }
-};
-
-// Get user favorites
-const getFavorites = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id)
-      .populate('favoritesPets')
-      .select('favoritesPets');
-    
-    res.json({
-      success: true,
-      data: user.favoritesPets
-    });
-  } catch (error) {
+    console.error('Update profile error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching favorites',
-      error: error.message
-    });
-  }
-};
-
-// Add pet to favorites
-const addToFavorites = async (req, res) => {
-  try {
-    const petId = req.params.petId;
-    const userId = req.user.id;
-    
-    // Check if pet exists
-    const pet = await Pet.findById(petId);
-    if (!pet) {
-      return res.status(404).json({
-        success: false,
-        message: 'Pet not found'
-      });
-    }
-    
-    // Add to favorites if not already there
-    const user = await User.findById(userId);
-    if (!user.favoritesPets.includes(petId)) {
-      user.favoritesPets.push(petId);
-      await user.save();
-    }
-    
-    res.json({
-      success: true,
-      message: 'Pet added to favorites'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Error adding to favorites',
-      error: error.message
-    });
-  }
-};
-
-// Remove pet from favorites
-const removeFromFavorites = async (req, res) => {
-  try {
-    const petId = req.params.petId;
-    const userId = req.user.id;
-    
-    const user = await User.findById(userId);
-    user.favoritesPets = user.favoritesPets.filter(
-      id => id.toString() !== petId
-    );
-    await user.save();
-    
-    res.json({
-      success: true,
-      message: 'Pet removed from favorites'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Error removing from favorites',
-      error: error.message
+      message: 'Server error'
     });
   }
 };
 
 module.exports = {
-  register,
-  login,
-  getProfile,
-  updateProfile,
-  getFavorites,
-  addToFavorites,
-  removeFromFavorites
+  registerUser,
+  loginUser,
+  getUserProfile,
+  updateUserProfile
 };

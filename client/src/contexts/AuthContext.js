@@ -39,22 +39,39 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    try {
-      const response = await api.post('/users/login', { email, password });
-      const { user, token } = response.data.data;
-      
-      localStorage.setItem('token', token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(user);
-      
-      return { success: true };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Login failed'
-      };
-    }
-  };
+  try {
+    console.log('🔍 Login attempt:', { 
+      email, 
+      password: password.substring(0,3) + '***',
+      apiBaseURL: api.defaults.baseURL || 'http://localhost:3000'
+    });
+    
+    const response = await api.post('/users/login', { email, password });
+    console.log('✅ Login successful:', response.data);
+    
+    const { user, token } = response.data.data;
+    
+    localStorage.setItem('token', token);
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    setUser(user);
+    
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Login failed:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      message: error.message,
+      url: error.config?.url,
+      method: error.config?.method
+    });
+    
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Login failed'
+    };
+  }
+};
 
   const register = async (userData) => {
     try {

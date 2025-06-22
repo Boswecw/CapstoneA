@@ -1,31 +1,29 @@
 {
-  "name": "furbabies-client",
+  "homepage": "https://Boswecw.github.io/CapstoneA",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://Boswecw.github.io/Capstone",
   "dependencies": {
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.10.0",
-    "bootstrap": "^5.3.7",
-    "react": "^19.1.0",
-    "react-bootstrap": "^2.10.10",
-    "react-dom": "^19.1.0",
-    "react-router-bootstrap": "^0.26.3",
-    "react-router-dom": "^7.6.2",
+    "axios": "^1.6.0",
+    "bootstrap": "^5.3.2",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.9.0",
+    "react-dom": "^18.2.0",
+    "react-router-bootstrap": "^0.26.2",
+    "react-router-dom": "^6.8.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
- "scripts": {
-  "start": "react-scripts start",
-  "build": "react-scripts build",
-  "test": "react-scripts test",
-  "eject": "react-scripts eject",
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d build"
-},
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -44,8 +42,8 @@
       "last 1 safari version"
     ]
   },
+  "proxy": "http://localhost:5000",
   "devDependencies": {
-    "react-scripts": "5.0.1"
-  },
-  "proxy": "http://localhost:5000"
+    "gh-pages": "^6.3.0"
+  }
 }

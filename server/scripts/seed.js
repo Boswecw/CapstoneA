@@ -1,25 +1,27 @@
+// server/scripts/seed.js
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const path = require('path');
 
-console.log('🔧 Loading environment variables...');
-dotenv.config();
+// Load environment variables
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 
-console.log('📦 Loading models...');
+// Import models
 const Pet = require('../models/Pet');
 const User = require('../models/User');
+const Contact = require('../models/Contact');
 
-console.log('🏗️  Models loaded successfully');
-
+// Sample pet data
 const pets = [
   {
-    name: 'Golden Retriever Puppy',
+    name: 'Golden Retriever',
     type: 'dog',
     breed: 'Golden Retriever',
-    age: '8 weeks',
-    price: 1200,
-    description: 'Friendly, loyal, and great with families.',
+    age: '2 years',
+    price: 800,
+    description: 'Friendly, loyal companion perfect for families. This beautiful Golden Retriever loves playing fetch and is great with children.',
     image: '/images/GoldenRetriever.png',
-    size: 'medium',
+    size: 'large',
     gender: 'male',
     available: true,
     votes: { up: 15, down: 2 }
@@ -28,91 +30,117 @@ const pets = [
     name: 'British Short-Hair',
     type: 'cat',
     breed: 'British Shorthair',
-    age: '2 years',
-    price: 120,
-    description: 'Gentle and loveable companion.',
+    age: '1 year',
+    price: 500,
+    description: 'Gentle and loveable companion. This cat is perfect for apartment living and has a calm temperament.',
     image: '/images/CatA.png',
     size: 'medium',
     gender: 'female',
     available: true,
-    votes: { up: 8, down: 1 }
+    votes: { up: 12, down: 1 }
   },
   {
     name: 'Betta Fish',
     type: 'fish',
     breed: 'Betta',
     age: '6 months',
-    price: 12,
-    description: 'Colorfully delightful aquatic companion.',
+    price: 25,
+    description: 'Colorfully delightful aquatic companion. Easy to care for and makes a great first pet.',
     image: '/images/Betafish.jpg',
     size: 'small',
     available: true,
-    votes: { up: 5, down: 0 }
+    votes: { up: 8, down: 0 }
   },
   {
     name: 'Colorful Parrot',
     type: 'bird',
     breed: 'Macaw',
     age: '1 year',
-    price: 4000,
-    description: 'Colorful and talkative, needs lots of love and attention.',
+    price: 1200,
+    description: 'Colorful and talkative, needs lots of love and attention. This intelligent bird can learn many words.',
     image: '/images/Parrot.png',
     size: 'large',
     gender: 'male',
     available: true,
-    votes: { up: 12, down: 3 }
+    votes: { up: 18, down: 3 }
   },
   {
     name: 'Holland Lop Rabbit',
     type: 'small-pet',
     breed: 'Holland Lop',
     age: '4 months',
-    price: 45,
-    description: 'Fluffy and fun, perfect for kids.',
+    price: 150,
+    description: 'Fluffy and fun, perfect for kids. This rabbit is litter trained and very social.',
     image: '/images/RabbitA.png',
     size: 'small',
     gender: 'female',
     available: true,
-    votes: { up: 7, down: 1 }
+    votes: { up: 10, down: 1 }
   },
   {
     name: 'Guinea Pig',
     type: 'small-pet',
     breed: 'American Guinea Pig',
     age: '3 months',
-    price: 35,
-    description: 'Lively and social beginner pet.',
+    price: 45,
+    description: 'Lively and social beginner pet. Great for children and very easy to care for.',
     image: '/images/GuineaPigsLPicon.png',
     size: 'small',
     gender: 'male',
     available: true,
-    votes: { up: 6, down: 0 }
+    votes: { up: 7, down: 0 }
   },
   {
     name: 'German Shepherd',
     type: 'dog',
     breed: 'German Shepherd',
     age: '1 year',
-    price: 1200,
-    description: 'Highly intelligent intensely active breed.',
-    image: '/images/germanshepherd.png',
+    price: 1000,
+    description: 'Highly intelligent intensely active breed. Perfect for active families who enjoy outdoor activities.',
+    image: '/images/german shepherd.png',
     size: 'large',
     gender: 'female',
     available: true,
-    votes: { up: 20, down: 1 }
+    votes: { up: 22, down: 1 }
   },
   {
     name: 'Siamese Cat',
     type: 'cat',
     breed: 'Siamese',
     age: '6 months',
-    price: 300,
-    description: 'Talkative social and unique companion.',
+    price: 400,
+    description: 'Talkative social and unique companion. Known for their beautiful blue eyes and vocal personality.',
     image: '/images/Siamese.png',
     size: 'medium',
     gender: 'male',
     available: true,
-    votes: { up: 9, down: 2 }
+    votes: { up: 14, down: 2 }
+  },
+  {
+    name: 'Labrador Puppy',
+    type: 'dog',
+    breed: 'Labrador Retriever',
+    age: '3 months',
+    price: 650,
+    description: 'Energetic and friendly puppy. Great with kids and other pets. Needs lots of exercise and play.',
+    image: '/images/labrador.png',
+    size: 'medium',
+    gender: 'female',
+    available: true,
+    votes: { up: 20, down: 0 }
+  },
+  {
+    name: 'Persian Cat',
+    type: 'cat',
+    breed: 'Persian',
+    age: '2 years',
+    price: 600,
+    description: 'Beautiful long-haired cat with a gentle personality. Requires regular grooming but very affectionate.',
+    image: '/images/persian.png',
+    size: 'medium',
+    gender: 'female',
+    available: true,
+    votes: { up: 11, down: 1 }
   },
   {
     name: 'Pet Bed',
@@ -120,10 +148,10 @@ const pets = [
     breed: 'Comfort Bed',
     age: 'N/A',
     price: 65,
-    description: 'Soft, cozy and easy to wash.',
+    description: 'Soft, cozy and easy to wash. Perfect for dogs and cats of all sizes.',
     image: '/images/PetBeds.png',
     available: true,
-    votes: { up: 3, down: 0 }
+    votes: { up: 5, down: 0 }
   },
   {
     name: 'Premium Pet Food',
@@ -131,59 +159,149 @@ const pets = [
     breed: 'Nutrition Plus',
     age: 'N/A',
     price: 30,
-    description: 'Wholesome nutrition for furry friends.',
+    description: 'Wholesome nutrition for furry friends. High-quality ingredients for optimal health.',
     image: '/images/PetFoodLPicon.png',
     available: true,
-    votes: { up: 4, down: 1 }
+    votes: { up: 8, down: 1 }
+  },
+  {
+    name: 'Interactive Cat Toy',
+    type: 'supply',
+    breed: 'Smart Toy',
+    age: 'N/A',
+    price: 25,
+    description: 'Keep your cat entertained for hours. Motion-activated and battery-powered.',
+    image: '/images/interactivecattoy.png',
+    available: true,
+    votes: { up: 6, down: 0 }
+  },
+  {
+    name: 'Aquarium Kit',
+    type: 'supply',
+    breed: 'Complete Setup',
+    age: 'N/A',
+    price: 120,
+    description: 'Everything you need to start your aquarium. Includes tank, filter, and starter supplies.',
+    image: '/images/Aquarium.png',
+    available: true,
+    votes: { up: 4, down: 0 }
+  }
+];
+
+// Sample users
+const users = [
+  {
+    username: 'admin',
+    email: 'admin@furbabies.com',
+    password: 'admin123',
+    role: 'admin',
+    profile: {
+      firstName: 'Admin',
+      lastName: 'User'
+    }
+  },
+  {
+    username: 'testuser',
+    email: 'test@example.com',
+    password: 'password123',
+    role: 'user',
+    profile: {
+      firstName: 'Test',
+      lastName: 'User'
+    }
+  },
+  {
+    username: 'johndoe',
+    email: 'john@example.com',
+    password: 'password123',
+    role: 'user',
+    profile: {
+      firstName: 'John',
+      lastName: 'Doe'
+    }
+  },
+  {
+    username: 'janesmith',
+    email: 'jane@example.com',
+    password: 'password123',
+    role: 'user',
+    profile: {
+      firstName: 'Jane',
+      lastName: 'Smith'
+    }
+  }
+];
+
+// Sample contact messages
+const contacts = [
+  {
+    name: 'Alice Johnson',
+    email: 'alice@example.com',
+    subject: 'Question about adoption',
+    message: 'Hi, I am interested in adopting a Golden Retriever. Could you please provide more information about the adoption process?'
+  },
+  {
+    name: 'Bob Wilson',
+    email: 'bob@example.com',
+    subject: 'Pet supplies inquiry',
+    message: 'Do you offer delivery for pet supplies? I am looking to purchase some premium pet food.'
+  },
+  {
+    name: 'Carol Davis',
+    email: 'carol@example.com',
+    subject: 'Volunteer opportunities',
+    message: 'I would like to volunteer at your pet store. Are there any opportunities available?'
   }
 ];
 
 const seedDatabase = async () => {
   try {
-    console.log('🚀 Starting database seeding process...');
+    console.log('🌱 Starting comprehensive database seeding...');
+    console.log('=' * 50);
     
     // Connect to MongoDB
     console.log('📡 Connecting to MongoDB...');
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ Connected to MongoDB');
+    console.log('✅ Connected to MongoDB successfully');
     console.log('📊 Database name:', mongoose.connection.name);
+    console.log('');
 
     // Clear existing data
     console.log('🗑️  Clearing existing data...');
     const deletedPets = await Pet.deleteMany({});
     const deletedUsers = await User.deleteMany({});
-    console.log(`🗑️  Deleted ${deletedPets.deletedCount} pets and ${deletedUsers.deletedCount} users`);
+    const deletedContacts = await Contact.deleteMany({});
+    console.log(`🗑️  Deleted ${deletedPets.deletedCount} pets`);
+    console.log(`🗑️  Deleted ${deletedUsers.deletedCount} users`);
+    console.log(`🗑️  Deleted ${deletedContacts.deletedCount} contacts`);
+    console.log('');
 
-    // Create admin user
-    console.log('👤 Creating admin user...');
-    const adminUser = new User({
-      username: 'admin',
-      email: 'admin@furbabies.com',
-      password: 'admin123',
-      role: 'admin',
-      profile: {
-        firstName: 'Admin',
-        lastName: 'User'
+    // Create users
+    console.log('👥 Creating users...');
+    const createdUsers = [];
+    
+    for (let i = 0; i < users.length; i++) {
+      const userData = users[i];
+      console.log(`📝 Creating user ${i + 1}/${users.length}: ${userData.email}`);
+      
+      try {
+        const user = new User(userData);
+        const savedUser = await user.save();
+        createdUsers.push(savedUser);
+        console.log(`✅ Created: ${userData.email} (${userData.role})`);
+      } catch (error) {
+        console.error(`❌ Failed to create ${userData.email}:`, error.message);
       }
-    });
-    await adminUser.save();
-    console.log('✅ Admin user created:', adminUser.email);
+    }
 
-    // Create test user
-    console.log('👤 Creating test user...');
-    const testUser = new User({
-      username: 'testuser',
-      email: 'test@example.com',
-      password: 'password123',
-      profile: {
-        firstName: 'Test',
-        lastName: 'User'
-      }
-    });
-    await testUser.save();
-    console.log('✅ Test user created:', testUser.email);
+    console.log(`🎉 Successfully created ${createdUsers.length} users`);
+    console.log('');
 
-    // Create pets one by one
+    // Get admin user for pet creation
+    const adminUser = createdUsers.find(user => user.role === 'admin');
+    const testUsers = createdUsers.filter(user => user.role === 'user');
+
+    // Create pets
     console.log('🐾 Creating pets...');
     const createdPets = [];
     
@@ -199,53 +317,110 @@ const seedDatabase = async () => {
         
         const savedPet = await pet.save();
         createdPets.push(savedPet);
-        console.log(`✅ Created: ${petData.name} (${petData.type})`);
+        console.log(`✅ Created: ${petData.name} (${petData.type}) - $${petData.price}`);
       } catch (error) {
         console.error(`❌ Failed to create ${petData.name}:`, error.message);
-        console.error('Pet data:', petData);
       }
     }
 
     console.log(`🎉 Successfully created ${createdPets.length} pets`);
+    console.log('');
 
-    // Add sample ratings
-    if (createdPets.length > 0) {
+    // Add sample ratings to pets
+    if (createdPets.length > 0 && testUsers.length > 0) {
       console.log('⭐ Adding sample ratings...');
-      for (let i = 0; i < Math.min(3, createdPets.length); i++) {
+      
+      // Add ratings to random pets
+      for (let i = 0; i < Math.min(8, createdPets.length); i++) {
         const pet = createdPets[i];
+        const randomUser = testUsers[Math.floor(Math.random() * testUsers.length)];
+        const rating = Math.floor(Math.random() * 2) + 4; // 4 or 5 stars
+        
         pet.ratings.push({
-          user: testUser._id,
-          rating: Math.floor(Math.random() * 2) + 4, // 4 or 5 stars
-          comment: 'Great pet! Highly recommended.',
+          user: randomUser._id,
+          rating: rating,
+          comment: rating === 5 ? 'Amazing pet! Highly recommended!' : 'Great pet, very happy with our choice.',
           createdAt: new Date()
         });
+        
         await pet.save();
-        console.log(`⭐ Added rating to: ${pet.name}`);
+        console.log(`⭐ Added ${rating}-star rating to: ${pet.name}`);
       }
       console.log('✅ Sample ratings added');
+      console.log('');
     }
+
+    // Create contact messages
+    console.log('📧 Creating contact messages...');
+    const createdContacts = [];
+    
+    for (let i = 0; i < contacts.length; i++) {
+      const contactData = contacts[i];
+      console.log(`📝 Creating contact ${i + 1}/${contacts.length}: ${contactData.name}`);
+      
+      try {
+        const contact = new Contact(contactData);
+        const savedContact = await contact.save();
+        createdContacts.push(savedContact);
+        console.log(`✅ Created contact from: ${contactData.name}`);
+      } catch (error) {
+        console.error(`❌ Failed to create contact from ${contactData.name}:`, error.message);
+      }
+    }
+
+    console.log(`🎉 Successfully created ${createdContacts.length} contact messages`);
+    console.log('');
 
     // Final summary
     const totalPets = await Pet.countDocuments();
     const totalUsers = await User.countDocuments();
+    const totalContacts = await Contact.countDocuments();
     
-    console.log('\n🎉 Database seeded successfully!');
-    console.log(`📊 Final counts: ${totalPets} pets, ${totalUsers} users`);
-    console.log('\n📝 Login credentials:');
-    console.log('🔑 Admin: admin@furbabies.com / admin123');
-    console.log('🔑 User: test@example.com / password123');
+    console.log('=' * 50);
+    console.log('🎉 DATABASE SEEDING COMPLETED SUCCESSFULLY!');
+    console.log('=' * 50);
+    console.log(`📊 Final Statistics:`);
+    console.log(`   🐾 Pets: ${totalPets}`);
+    console.log(`   👥 Users: ${totalUsers}`);
+    console.log(`   📧 Contacts: ${totalContacts}`);
+    console.log('');
+    console.log('🔑 Login Credentials:');
+    console.log('   👨‍💼 Admin: admin@furbabies.com / admin123');
+    console.log('   👤 Test User: test@example.com / password123');
+    console.log('   👤 John Doe: john@example.com / password123');
+    console.log('   👤 Jane Smith: jane@example.com / password123');
+    console.log('');
+    console.log('🎯 Next Steps:');
+    console.log('   1. Start your development server: npm run dev');
+    console.log('   2. Visit: http://localhost:3000');
+    console.log('   3. Try logging in with admin credentials');
+    console.log('   4. Check the featured pets section');
+    console.log('');
     
-    mongoose.disconnect();
+    await mongoose.disconnect();
     console.log('👋 Disconnected from database');
+    console.log('🌟 Ready to test your FurBabies application!');
+    
     process.exit(0);
     
   } catch (error) {
-    console.error('\n❌ Seeding failed with error:', error.message);
-    console.error('Full error details:', error);
-    mongoose.disconnect();
+    console.error('\n💥 SEEDING FAILED!');
+    console.error('❌ Error:', error.message);
+    console.error('📋 Full error details:', error);
+    
+    try {
+      await mongoose.disconnect();
+    } catch (disconnectError) {
+      console.error('❌ Error disconnecting:', disconnectError.message);
+    }
+    
     process.exit(1);
   }
 };
 
-console.log('🌱 Initializing seed script...');
+// Run the seeding
+console.log('🌱 FurBabies Database Seeding Script');
+console.log('🕒 Started at:', new Date().toLocaleString());
+console.log('');
+
 seedDatabase();
