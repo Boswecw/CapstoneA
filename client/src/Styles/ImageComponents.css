@@ -1,4 +1,3 @@
-
 .pet-image-container {
   position: relative;
   width: 100%;
@@ -111,7 +110,7 @@
   background: #e9ecef;
   padding: 2px 6px;
   border-radius: 3px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 }
 
 .path-help {
@@ -146,7 +145,7 @@
   background: #e9ecef;
   padding: 2px 6px;
   border-radius: 3px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 }
 
 .image-preview {
@@ -197,7 +196,7 @@
   background: #e9ecef;
   padding: 2px 6px;
   border-radius: 3px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   word-break: break-all;
 }
 
@@ -212,6 +211,10 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

@@ -1,20 +1,28 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
-import { Link, Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Form,
+  Button,
+  Alert,
+} from "react-bootstrap";
+import { Link, Navigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const Register = () => {
   const { user, register } = useAuth();
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    firstName: '',
-    lastName: ''
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Redirect if already logged in
   if (user) {
@@ -24,39 +32,41 @@ const Register = () => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       setLoading(false);
       return;
     }
 
     const result = await register(formData);
-    
+
     if (!result.success) {
       setError(result.message);
     }
-    
+
     setLoading(false);
   };
 
   return (
-    <Container className="py-5" style={{ marginTop: '80px' }}>
+    <Container className="py-5" style={{ marginTop: "80px" }}>
       <Row className="justify-content-center">
         <Col md={8} lg={6}>
           <Card>
             <Card.Body>
               <div className="text-center mb-4">
-                <h2><i className="fas fa-paw me-2"></i>Join FurBabies</h2>
+                <h2>
+                  <i className="fas fa-paw me-2"></i>Join FurBabies
+                </h2>
                 <p className="text-muted">Create your account</p>
               </div>
 
@@ -142,13 +152,13 @@ const Register = () => {
                   />
                 </Form.Group>
 
-                <Button 
-                  type="submit" 
-                  variant="primary" 
+                <Button
+                  type="submit"
+                  variant="primary"
                   className="w-100 mb-3"
                   disabled={loading}
                 >
-                  {loading ? 'Creating Account...' : 'Create Account'}
+                  {loading ? "Creating Account..." : "Create Account"}
                 </Button>
               </Form>
 

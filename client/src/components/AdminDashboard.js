@@ -1,11 +1,11 @@
 // client/src/components/AdminDashboard.js (SAFE VERSION - Debug React Errors)
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { usePets } from '../hooks/usePets';
-import EnhancedAddPetForm from './EnhancedAddPetForm';
-import EditPetForm from './EditPetForm';
-import ErrorBoundary from './ErrorBoundary';
-import './AdminDashboard.css';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { usePets } from "../hooks/usePets";
+import EnhancedAddPetForm from "./EnhancedAddPetForm";
+import EditPetForm from "./EditPetForm";
+import ErrorBoundary from "./ErrorBoundary";
+import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
@@ -16,13 +16,13 @@ const AdminDashboard = () => {
   // Handle Escape key to close modals
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         setShowAddForm(false);
         setEditingPet(null);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const handleLogout = () => {
@@ -30,25 +30,29 @@ const AdminDashboard = () => {
   };
 
   const handleDeletePet = async (id, petName) => {
-    if (window.confirm(`Are you sure you want to delete ${petName}? This action cannot be undone.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${petName}? This action cannot be undone.`,
+      )
+    ) {
       try {
         await deletePet(id);
         alert(`${petName} has been deleted successfully.`);
       } catch (error) {
-        alert('Error deleting pet: ' + error.message);
+        alert("Error deleting pet: " + error.message);
       }
     }
   };
 
   const handleAddPet = async (petData) => {
     try {
-      console.log('📝 AdminDashboard: Adding pet:', petData);
+      console.log("📝 AdminDashboard: Adding pet:", petData);
       await addPet(petData);
       setShowAddForm(false);
-      alert('Pet added successfully!');
+      alert("Pet added successfully!");
     } catch (error) {
-      console.error('❌ AdminDashboard: Error adding pet:', error);
-      alert('Error adding pet: ' + error.message);
+      console.error("❌ AdminDashboard: Error adding pet:", error);
+      alert("Error adding pet: " + error.message);
     }
   };
 
@@ -56,20 +60,20 @@ const AdminDashboard = () => {
     try {
       await updatePet(id, petData);
       setEditingPet(null);
-      alert('Pet updated successfully!');
+      alert("Pet updated successfully!");
     } catch (error) {
-      alert('Error updating pet: ' + error.message);
+      alert("Error updating pet: " + error.message);
     }
   };
 
   // Debug logging
-  console.log('🎛️ AdminDashboard render:', {
+  console.log("🎛️ AdminDashboard render:", {
     user: user?.email,
     petsCount: pets?.length,
     showAddForm,
     editingPet: !!editingPet,
     loading,
-    error
+    error,
   });
 
   if (loading) {
@@ -84,8 +88,10 @@ const AdminDashboard = () => {
   // Safely get stats to avoid React object rendering errors
   const safeStats = {
     total: Array.isArray(pets) ? pets.length : 0,
-    available: Array.isArray(pets) ? pets.filter(pet => !pet.adopted).length : 0,
-    adopted: Array.isArray(pets) ? pets.filter(pet => pet.adopted).length : 0
+    available: Array.isArray(pets)
+      ? pets.filter((pet) => !pet.adopted).length
+      : 0,
+    adopted: Array.isArray(pets) ? pets.filter((pet) => pet.adopted).length : 0,
   };
 
   return (
@@ -94,7 +100,9 @@ const AdminDashboard = () => {
         <div className="admin-header-content">
           <h1>🐾 Furbabies Admin Dashboard</h1>
           <div className="admin-user-info">
-            <span>Welcome, {user?.name || user?.username || user?.email || 'Admin'}!</span>
+            <span>
+              Welcome, {user?.name || user?.username || user?.email || "Admin"}!
+            </span>
             <button onClick={handleLogout} className="logout-btn">
               Logout
             </button>
@@ -127,7 +135,7 @@ const AdminDashboard = () => {
         <div className="admin-actions">
           <button
             onClick={() => {
-              console.log('🖱️ Add Pet button clicked');
+              console.log("🖱️ Add Pet button clicked");
               setShowAddForm(true);
             }}
             className="btn btn-primary add-pet-btn"
@@ -138,14 +146,8 @@ const AdminDashboard = () => {
 
         {/* Add Pet Modal */}
         {showAddForm && (
-          <div 
-            className="modal-overlay" 
-            onClick={() => setShowAddForm(false)}
-          >
-            <div 
-              className="modal" 
-              onClick={(e) => e.stopPropagation()}
-            >
+          <div className="modal-overlay" onClick={() => setShowAddForm(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
               <ErrorBoundary>
                 <EnhancedAddPetForm
                   onSubmit={handleAddPet}
@@ -163,7 +165,9 @@ const AdminDashboard = () => {
               <ErrorBoundary>
                 <EditPetForm
                   pet={editingPet}
-                  onSubmit={(petData) => handleUpdatePet(editingPet._id, petData)}
+                  onSubmit={(petData) =>
+                    handleUpdatePet(editingPet._id, petData)
+                  }
                   onCancel={() => setEditingPet(null)}
                 />
               </ErrorBoundary>
@@ -176,10 +180,10 @@ const AdminDashboard = () => {
 
           {Array.isArray(pets) && pets.length > 0 ? (
             <div className="admin-pets-grid">
-              {pets.map(pet => {
+              {pets.map((pet) => {
                 // Safely render each pet to avoid object rendering errors
-                if (!pet || typeof pet !== 'object' || !pet._id) {
-                  console.warn('Invalid pet object:', pet);
+                if (!pet || typeof pet !== "object" || !pet._id) {
+                  console.warn("Invalid pet object:", pet);
                   return null;
                 }
 
@@ -194,17 +198,32 @@ const AdminDashboard = () => {
                     </div>
 
                     <div className="pet-details">
-                      <h3>{String(pet.name || 'Unnamed Pet')}</h3>
-                      <p><strong>Type:</strong> {String(pet.type || 'Unknown')}</p>
-                      <p><strong>Breed:</strong> {String(pet.breed || 'Mixed')}</p>
-                      <p><strong>Age:</strong> {String(pet.age || 'Unknown')} years</p>
-                      <p><strong>Votes:</strong> {Number(pet.votes) || 0}</p>
-                      <p><strong>Status:</strong>
-                        <span className={`status ${pet.adopted ? 'adopted' : 'available'}`}>
-                          {pet.adopted ? 'Adopted' : 'Available'}
+                      <h3>{String(pet.name || "Unnamed Pet")}</h3>
+                      <p>
+                        <strong>Type:</strong> {String(pet.type || "Unknown")}
+                      </p>
+                      <p>
+                        <strong>Breed:</strong> {String(pet.breed || "Mixed")}
+                      </p>
+                      <p>
+                        <strong>Age:</strong> {String(pet.age || "Unknown")}{" "}
+                        years
+                      </p>
+                      <p>
+                        <strong>Votes:</strong> {Number(pet.votes) || 0}
+                      </p>
+                      <p>
+                        <strong>Status:</strong>
+                        <span
+                          className={`status ${pet.adopted ? "adopted" : "available"}`}
+                        >
+                          {pet.adopted ? "Adopted" : "Available"}
                         </span>
                       </p>
-                      <p><strong>Description:</strong> {String(pet.description || 'No description')}</p>
+                      <p>
+                        <strong>Description:</strong>{" "}
+                        {String(pet.description || "No description")}
+                      </p>
                     </div>
 
                     <div className="admin-pet-actions">

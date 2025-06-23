@@ -13,12 +13,14 @@ A modern pet adoption platform built with React and Node.js, helping connect lov
 ## Tech Stack
 
 **Frontend:**
+
 - React 18
 - React Router
 - React Bootstrap
 - Axios for API calls
 
 **Backend:**
+
 - Node.js
 - Express.js
 - MongoDB with Mongoose
@@ -36,16 +38,18 @@ A modern pet adoption platform built with React and Node.js, helping connect lov
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Boswecw/furbabies-petstore.git
    cd furbabies-petstore
    ```
 
 2. **Install dependencies**
+
    ```bash
    # Install server dependencies
    npm install
-   
+
    # Install client dependencies
    cd client
    npm install
@@ -53,8 +57,9 @@ A modern pet adoption platform built with React and Node.js, helping connect lov
    ```
 
 3. **Set up environment variables**
-   
+
    Create a `.env` file in the project root:
+
    ```
    MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret_key
@@ -63,6 +68,7 @@ A modern pet adoption platform built with React and Node.js, helping connect lov
    ```
 
 4. **Start the development servers**
+
    ```bash
    npm run dev
    ```
@@ -125,12 +131,12 @@ furbabies-petstore/
 
 The following environment variables are required:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
+| Variable      | Description               | Example                                          |
+| ------------- | ------------------------- | ------------------------------------------------ |
 | `MONGODB_URI` | MongoDB connection string | `mongodb+srv://user:pass@cluster.mongodb.net/db` |
-| `JWT_SECRET` | Secret key for JWT tokens | `your-super-secret-key` |
-| `NODE_ENV` | Environment mode | `development` or `production` |
-| `PORT` | Server port | `5000` |
+| `JWT_SECRET`  | Secret key for JWT tokens | `your-super-secret-key`                          |
+| `NODE_ENV`    | Environment mode          | `development` or `production`                    |
+| `PORT`        | Server port               | `5000`                                           |
 
 ## License
 

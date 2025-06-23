@@ -1,25 +1,33 @@
-// client/src/pages/Cart.js
-import React from 'react';
-import { Container, Row, Col, Card, Button, Table } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { useCart } from '../contexts/CartContext';
+import React from "react";
+import { Container, Row, Col, Card, Button, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { useCart } from "../contexts/CartContext";
 
 const Cart = () => {
-  const { items, updateQuantity, removeFromCart, clearCart, cartTotal } = useCart();
+  const {
+    items:cartItems,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+    cartTotal,
+  } = useCart();
 
-  if (items.length === 0) {
+  // Fix: Add safety check for cartItems being undefined
+  const safeCartItems = cartItems || [];
+
+  if (safeCartItems.length === 0) {
     return (
-      <Container className="py-5" style={{ marginTop: '80px' }}>
+      <Container className="py-5" style={{ marginTop: "80px" }}>
         <Row className="justify-content-center">
           <Col md={8} className="text-center">
             <i className="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
             <h2>Your Cart is Empty</h2>
             <p className="text-muted mb-4">
-              Looks like you haven't added any pets to your cart yet.
+              Looks like you haven't added any products to your cart yet.
             </p>
             <Link to="/browse">
               <Button variant="primary" size="lg">
-                <i className="fas fa-search me-2"></i>Browse Pets
+                <i className="fas fa-search me-2"></i>Browse Products
               </Button>
             </Link>
           </Col>
@@ -28,17 +36,17 @@ const Cart = () => {
     );
   }
 
-  const shipping = 0; // Free shipping
-  const tax = cartTotal * 0.08; // 8% tax
-  const finalTotal = cartTotal + shipping + tax;
+  const shipping = 0;
+  const tax = (cartTotal || 0) * 0.08; // Add safety check for cartTotal
+  const finalTotal = (cartTotal || 0) + shipping + tax;
 
   return (
-    <Container className="py-5" style={{ marginTop: '80px' }}>
+    <Container className="py-5" style={{ marginTop: "80px" }}>
       <Row>
         <Col lg={8}>
           <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
-              <h4 className="mb-0">Shopping Cart ({items.length} items)</h4>
+              <h4 className="mb-0">Shopping Cart ({safeCartItems.length} items)</h4>
               <Button variant="outline-danger" size="sm" onClick={clearCart}>
                 Clear Cart
               </Button>
@@ -47,65 +55,74 @@ const Cart = () => {
               <Table responsive className="mb-0">
                 <thead className="table-light">
                   <tr>
-                    <th>Pet</th>
+                    <th>Item</th>
                     <th>Price</th>
-                    <th>Quantity</th>
+                    <th>Qty</th>
                     <th>Total</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map(item => (
-                    <tr key={item.id}>
+                  {safeCartItems.map((item) => (
+                    <tr key={item._id}>
                       <td>
                         <div className="d-flex align-items-center">
-                          <img 
-                            src={item.image} 
+                          <img
+                            src={item.image}
                             alt={item.name}
-                            style={{ 
-                              width: '80px', 
-                              height: '60px', 
-                              objectFit: 'cover',
-                              borderRadius: '8px',
-                              marginRight: '1rem'
+                            style={{
+                              width: "80px",
+                              height: "60px",
+                              objectFit: "cover",
+                              borderRadius: "8px",
+                              marginRight: "1rem",
                             }}
                           />
                           <div>
                             <h6 className="mb-1">{item.name}</h6>
-                            <small className="text-muted">{item.breed} • {item.type}</small>
+                            <small className="text-muted">
+                              {item.type === "supply"
+                                ? "Product"
+                                : `${item.breed || 'Unknown'} • ${item.type || 'Pet'}`}
+                            </small>
                           </div>
                         </div>
                       </td>
                       <td className="align-middle">
-                        <strong>${item.price}</strong>
+                        <strong>${(item.price || 0).toFixed(2)}</strong>
                       </td>
                       <td className="align-middle">
                         <div className="d-flex align-items-center">
-                          <Button 
-                            variant="outline-secondary" 
+                          <Button
+                            variant="outline-secondary"
                             size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() =>
+                              updateQuantity(item._id, Math.max(1, (item.quantity || 1) - 1))
+                            }
+                            disabled={(item.quantity || 1) <= 1}
                           >
                             -
                           </Button>
-                          <span className="mx-3">{item.quantity}</span>
-                          <Button 
-                            variant="outline-secondary" 
+                          <span className="mx-3">{item.quantity || 1}</span>
+                          <Button
+                            variant="outline-secondary"
                             size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() =>
+                              updateQuantity(item._id, (item.quantity || 1) + 1)
+                            }
                           >
                             +
                           </Button>
                         </div>
                       </td>
                       <td className="align-middle">
-                        <strong>${(item.price * item.quantity).toFixed(2)}</strong>
+                        <strong>${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</strong>
                       </td>
                       <td className="align-middle">
-                        <Button 
-                          variant="link" 
+                        <Button
+                          variant="link"
                           className="text-danger"
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart(item._id)}
                         >
                           <i className="fas fa-trash"></i>
                         </Button>
@@ -126,7 +143,7 @@ const Cart = () => {
             <Card.Body>
               <div className="d-flex justify-content-between mb-2">
                 <span>Subtotal:</span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>${(cartTotal || 0).toFixed(2)}</span>
               </div>
               <div className="d-flex justify-content-between mb-2">
                 <span>Shipping:</span>
@@ -141,7 +158,7 @@ const Cart = () => {
                 <strong>Total:</strong>
                 <strong>${finalTotal.toFixed(2)}</strong>
               </div>
-              
+
               <div className="d-grid gap-2">
                 <Link to="/checkout">
                   <Button variant="primary" size="lg" className="w-100">

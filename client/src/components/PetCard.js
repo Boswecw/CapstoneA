@@ -1,4 +1,4 @@
-// client/src/components/PetCard.js (Updated)
+// client/src/components/PetCard.js - WITH ENHANCED IMAGE STYLING
 import React, { useState } from 'react';
 import { Card, Button, Badge, Toast } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -6,12 +6,16 @@ import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 import { useApiCall } from '../hooks/useApiCall';
 import api from '../services/api';
+import './PetImage.css'; // Import the CSS
 
-const PetCard = ({ pet, onVote, showAddToCart = true }) => {
+const PetCard = ({ pet, onVote, showAddToCart = true, size = 'medium' }) => {
   const { user } = useAuth();
   const { addToCart } = useCart();
   const { execute, loading: voting } = useApiCall();
   const [showToast, setShowToast] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   const handleVote = async (voteType) => {
     if (!user || voting) return;
@@ -28,9 +32,26 @@ const PetCard = ({ pet, onVote, showAddToCart = true }) => {
   };
 
   const handleAddToCart = () => {
+    if (isAdding) return;
+    
+    setIsAdding(true);
     addToCart(pet);
     setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
+    
+    setTimeout(() => {
+      setIsAdding(false);
+      setShowToast(false);
+    }, 2000);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    setImageLoading(false);
+    setImageError(true);
   };
 
   const formatPrice = (price) => {
@@ -40,20 +61,50 @@ const PetCard = ({ pet, onVote, showAddToCart = true }) => {
     return price;
   };
 
+  // Get CSS class based on size prop
+  const getImageContainerClass = () => {
+    let baseClass = 'pet-image-container';
+    if (size === 'small') baseClass += ' small';
+    if (size === 'large') baseClass += ' large';
+    if (size === 'square') baseClass += ' square';
+    return baseClass;
+  };
+
   return (
     <>
       <Card className="h-100 pet-card">
         <div className="position-relative">
-          <Card.Img 
-            variant="top" 
-            src={pet.image} 
-            alt={pet.name}
-            className="card-img-top"
-            loading="lazy"
-          />
+          {/* Enhanced Image Container */}
+          <div className={getImageContainerClass()}>
+            {imageLoading && (
+              <div className="image-loading">
+                <div className="spinner"></div>
+                <span>Loading...</span>
+              </div>
+            )}
+            
+            {imageError && (
+              <div className="image-error-overlay">
+                <span>🐾</span>
+                <p>Image not available</p>
+                <small>Photo coming soon</small>
+              </div>
+            )}
+            
+            <img
+              src={pet.image}
+              alt={pet.name}
+              className={`pet-image ${imageLoading ? 'loading' : ''}`}
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+              style={{ display: imageError ? 'none' : 'block' }}
+            />
+          </div>
+          
           <Badge 
             bg={pet.available ? 'success' : 'secondary'}
             className="position-absolute top-0 end-0 m-2"
+            style={{ zIndex: 10 }}
           >
             {pet.available ? 'Available' : 'Adopted'}
           </Badge>
@@ -91,9 +142,10 @@ const PetCard = ({ pet, onVote, showAddToCart = true }) => {
                   variant="success" 
                   size="sm"
                   onClick={handleAddToCart}
+                  disabled={isAdding}
                 >
                   <i className="fas fa-cart-plus me-1"></i>
-                  Add to Cart
+                  {isAdding ? 'Adding...' : 'Add to Cart'}
                 </Button>
               )}
               

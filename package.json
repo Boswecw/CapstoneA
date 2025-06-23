@@ -10,7 +10,8 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build": "cd client && npm run build",
     "seed": "node server/scripts/seed.js",
-    "debug-login": "node server/scripts/debugLogin.js"
+    "debug-login": "node server/scripts/debugLogin.js",
+    "format": "prettier --write \"**/*.{js,jsx,json,css,md}\""   
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -21,11 +22,13 @@
     "express-validator": "^7.2.1",
     "helmet": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.17.0",
     "mongoose": "^7.8.7",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.0"
   }
 }

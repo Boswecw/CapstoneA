@@ -1,8 +1,8 @@
 // client/src/components/PetList.js
-import React from 'react';
-import { Link } from 'react-router-dom';
-import PetImage from './PetImage';
-import './PetList.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import PetImage from "./PetImage";
+import "./PetList.css";
 
 const PetList = ({ pets, loading, onDeletePet, onVotePet }) => {
   const handleDelete = async (id, petName) => {
@@ -11,7 +11,7 @@ const PetList = ({ pets, loading, onDeletePet, onVotePet }) => {
         await onDeletePet(id);
         alert(`${petName} has been removed from the list.`);
       } catch (error) {
-        alert('Error deleting pet. Please try again.');
+        alert("Error deleting pet. Please try again.");
       }
     }
   };
@@ -21,7 +21,7 @@ const PetList = ({ pets, loading, onDeletePet, onVotePet }) => {
       await onVotePet(id);
       // Optional: Show success message
     } catch (error) {
-      alert('Error voting for pet. Please try again.');
+      alert("Error voting for pet. Please try again.");
     }
   };
 
@@ -46,21 +46,23 @@ const PetList = ({ pets, loading, onDeletePet, onVotePet }) => {
   return (
     <div className="pet-list">
       <div className="pets-grid">
-        {pets.map(pet => (
+        {pets.map((pet) => (
           <div key={pet._id} className="pet-card">
-            <PetImage 
-              src={pet.image} 
+            <PetImage
+              src={pet.image}
               alt={pet.name}
               fallbackText={`${pet.type} Photo`}
               className="pet-card-image"
             />
-            
+
             <div className="pet-info">
               <h3>{pet.name}</h3>
-              <p className="pet-type">{pet.type} • {pet.breed}</p>
+              <p className="pet-type">
+                {pet.type} • {pet.breed}
+              </p>
               {pet.age && <p className="pet-age">Age: {pet.age} years</p>}
               <p className="pet-description">{pet.description}</p>
-              
+
               <div className="pet-stats">
                 <span className="votes">❤️ {pet.votes || 0} votes</span>
                 {pet.adopted && <span className="adopted">✅ Adopted</span>}
@@ -68,22 +70,19 @@ const PetList = ({ pets, loading, onDeletePet, onVotePet }) => {
             </div>
 
             <div className="pet-actions">
-              <Link 
-                to={`/pet/${pet._id}`} 
-                className="btn btn-primary"
-              >
+              <Link to={`/pet/${pet._id}`} className="btn btn-primary">
                 View Details
               </Link>
-              
-              <button 
+
+              <button
                 onClick={() => handleVote(pet._id, pet.name)}
                 className="btn btn-secondary vote-btn"
                 disabled={pet.adopted}
               >
                 👍 Vote
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => handleDelete(pet._id, pet.name)}
                 className="btn btn-danger delete-btn"
               >

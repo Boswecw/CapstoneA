@@ -1,30 +1,36 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 const auth = async (req, res, next) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    const token = req.header("Authorization")?.replace("Bearer ", "");
     if (!token) {
-      return res.status(401).json({ success: false, message: 'No token provided' });
+      return res
+        .status(401)
+        .json({ success: false, message: "No token provided" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select('-password');
+    const user = await User.findById(decoded.id).select("-password");
     if (!user) {
-      return res.status(401).json({ success: false, message: 'User not found' });
+      return res
+        .status(401)
+        .json({ success: false, message: "User not found" });
     }
 
     req.user = user;
     next();
   } catch (err) {
-    res.status(401).json({ success: false, message: 'Invalid token' });
+    res.status(401).json({ success: false, message: "Invalid token" });
   }
 };
 
 // 🛡️ Admin check middleware
 const adminAuth = (req, res, next) => {
   if (!req.user || !req.user.isAdmin) {
-    return res.status(403).json({ success: false, message: 'Admin access required' });
+    return res
+      .status(403)
+      .json({ success: false, message: "Admin access required" });
   }
   next();
 };

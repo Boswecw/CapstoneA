@@ -82,7 +82,9 @@
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 14px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
   box-sizing: border-box;
 }
 
@@ -192,7 +194,7 @@
   border-radius: 6px;
   margin: 15px 0;
   border-left: 4px solid #2196f3;
-}/* client/src/styles/ImageComponents.css */
+} /* client/src/styles/ImageComponents.css */
 
 .pet-image-container {
   position: relative;
@@ -306,7 +308,7 @@
   background: #e9ecef;
   padding: 2px 6px;
   border-radius: 3px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 }
 
 .path-help {
@@ -341,7 +343,7 @@
   background: #e9ecef;
   padding: 2px 6px;
   border-radius: 3px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 }
 
 .image-preview {
@@ -392,7 +394,7 @@
   background: #e9ecef;
   padding: 2px 6px;
   border-radius: 3px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   word-break: break-all;
 }
 
@@ -407,6 +409,10 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

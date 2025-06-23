@@ -1,5 +1,5 @@
 // server/controllers/contactController.js
-const Contact = require('../models/Contact');
+const Contact = require("../models/Contact");
 
 // 📬 Submit contact form
 const submitContact = async (req, res) => {
@@ -9,28 +9,29 @@ const submitContact = async (req, res) => {
     const contact = new Contact({
       name,
       email,
-      subject: subject || 'General Inquiry',
-      message
+      subject: subject || "General Inquiry",
+      message,
     });
 
     await contact.save();
 
     res.status(201).json({
       success: true,
-      message: 'Contact form submitted successfully. We will get back to you soon!',
+      message:
+        "Contact form submitted successfully. We will get back to you soon!",
       data: {
         id: contact._id,
         name: contact.name,
         email: contact.email,
         subject: contact.subject,
-        createdAt: contact.createdAt
-      }
+        createdAt: contact.createdAt,
+      },
     });
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: 'Error submitting contact form',
-      error: error.message
+      message: "Error submitting contact form",
+      error: error.message,
     });
   }
 };
@@ -46,7 +47,7 @@ const getAllContacts = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit))
-      .populate('response.respondedBy', 'username email');
+      .populate("response.respondedBy", "username email");
 
     const total = await Contact.countDocuments(filter);
 
@@ -56,14 +57,14 @@ const getAllContacts = async (req, res) => {
       pagination: {
         current: Number(page),
         pages: Math.ceil(total / limit),
-        total
-      }
+        total,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching contacts',
-      error: error.message
+      message: "Error fetching contacts",
+      error: error.message,
     });
   }
 };
@@ -71,19 +72,23 @@ const getAllContacts = async (req, res) => {
 // 🔍 Get single contact by ID (Admin)
 const getContactById = async (req, res) => {
   try {
-    const contact = await Contact.findById(req.params.id)
-      .populate('response.respondedBy', 'username email');
+    const contact = await Contact.findById(req.params.id).populate(
+      "response.respondedBy",
+      "username email",
+    );
 
     if (!contact) {
-      return res.status(404).json({ success: false, message: 'Contact not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Contact not found" });
     }
 
     res.json({ success: true, data: contact });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching contact',
-      error: error.message
+      message: "Error fetching contact",
+      error: error.message,
     });
   }
 };
@@ -95,24 +100,26 @@ const respondToContact = async (req, res) => {
 
     const contact = await Contact.findById(req.params.id);
     if (!contact) {
-      return res.status(404).json({ success: false, message: 'Contact not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Contact not found" });
     }
 
     contact.response = {
       message,
       respondedBy: req.user._id,
-      respondedAt: new Date()
+      respondedAt: new Date(),
     };
-    contact.status = 'responded';
+    contact.status = "responded";
 
     await contact.save();
 
-    res.json({ success: true, message: 'Response recorded', data: contact });
+    res.json({ success: true, message: "Response recorded", data: contact });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error responding to contact',
-      error: error.message
+      message: "Error responding to contact",
+      error: error.message,
     });
   }
 };
@@ -124,19 +131,25 @@ const updateContactStatus = async (req, res) => {
     const contact = await Contact.findByIdAndUpdate(
       req.params.id,
       { status },
-      { new: true }
+      { new: true },
     );
 
     if (!contact) {
-      return res.status(404).json({ success: false, message: 'Contact not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Contact not found" });
     }
 
-    res.json({ success: true, message: 'Contact status updated', data: contact });
+    res.json({
+      success: true,
+      message: "Contact status updated",
+      data: contact,
+    });
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: 'Error updating status',
-      error: error.message
+      message: "Error updating status",
+      error: error.message,
     });
   }
 };
@@ -147,5 +160,5 @@ module.exports = {
   getAllContacts,
   getContactById,
   respondToContact,
-  updateContactStatus
+  updateContactStatus,
 };

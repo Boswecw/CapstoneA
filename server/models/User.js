@@ -1,58 +1,65 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    minlength: 3
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      minlength: 3,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    profile: {
+      firstName: String,
+      lastName: String,
+      phone: String,
+      address: {
+        street: String,
+        city: String,
+        state: String,
+        zipCode: String,
+      },
+    },
+    favoritesPets: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Pet",
+      },
+    ],
+    votedPets: [
+      {
+        pet: { type: mongoose.Schema.Types.ObjectId, ref: "Pet" },
+        voteType: { type: String, enum: ["up", "down"] },
+      },
+    ],
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true
+  {
+    timestamps: true,
   },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
-  },
-  profile: {
-    firstName: String,
-    lastName: String,
-    phone: String,
-    address: {
-      street: String,
-      city: String,
-      state: String,
-      zipCode: String
-    }
-  },
-  favoritesPets: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Pet'
-  }],
-  votedPets: [{
-    pet: { type: mongoose.Schema.Types.ObjectId, ref: 'Pet' },
-    voteType: { type: String, enum: ['up', 'down'] }
-  }]
-}, {
-  timestamps: true
-});
+);
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -63,8 +70,8 @@ userSchema.pre('save', async function(next) {
 });
 
 // Compare password method
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);

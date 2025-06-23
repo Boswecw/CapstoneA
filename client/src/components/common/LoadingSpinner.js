@@ -1,20 +1,20 @@
 // client/src/components/common/LoadingSpinner.js
-import React from 'react';
-import { Spinner } from 'react-bootstrap';
+import React from "react";
+import { Spinner } from "react-bootstrap";
 
-const LoadingSpinner = ({ 
-  size = 'border', 
-  variant = 'primary', 
-  text = 'Loading...', 
+const LoadingSpinner = ({
+  size = "border",
+  variant = "primary",
+  text = "Loading...",
   centered = true,
-  className = '',
+  className = "",
   showText = true,
-  spinnerSize = undefined // 'sm' for small spinner
+  spinnerSize = undefined, // 'sm' for small spinner
 }) => {
   const spinnerElement = (
-    <Spinner 
-      animation={size} 
-      variant={variant} 
+    <Spinner
+      animation={size}
+      variant={variant}
       role="status"
       size={spinnerSize}
     >
@@ -25,9 +25,7 @@ const LoadingSpinner = ({
   const content = (
     <div className={`d-flex align-items-center ${className}`}>
       {spinnerElement}
-      {showText && text && (
-        <span className="ms-2 text-muted">{text}</span>
-      )}
+      {showText && text && <span className="ms-2 text-muted">{text}</span>}
     </div>
   );
 
@@ -35,20 +33,18 @@ const LoadingSpinner = ({
     <div className="d-flex justify-content-center align-items-center py-4">
       {content}
     </div>
-  ) : content;
+  ) : (
+    content
+  );
 };
 
 // Preset loading spinners for common use cases
 export const PageLoadingSpinner = () => (
-  <LoadingSpinner 
-    text="Loading page..." 
-    centered={true}
-    className="py-5"
-  />
+  <LoadingSpinner text="Loading page..." centered={true} className="py-5" />
 );
 
 export const ButtonLoadingSpinner = () => (
-  <LoadingSpinner 
+  <LoadingSpinner
     size="border"
     spinnerSize="sm"
     text=""
@@ -58,15 +54,11 @@ export const ButtonLoadingSpinner = () => (
 );
 
 export const CardLoadingSpinner = () => (
-  <LoadingSpinner 
-    text="Loading content..." 
-    centered={true}
-    className="py-3"
-  />
+  <LoadingSpinner text="Loading content..." centered={true} className="py-3" />
 );
 
 export const InlineLoadingSpinner = () => (
-  <LoadingSpinner 
+  <LoadingSpinner
     size="border"
     spinnerSize="sm"
     text="Loading..."

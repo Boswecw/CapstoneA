@@ -1,57 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Container, Row, Col, Card, Button, Badge, Form, Alert, Spinner } from 'react-bootstrap';
-import { useAuth } from '../contexts/AuthContext';
-import api from '../services/api';
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Badge,
+  Form,
+  Alert,
+  Spinner,
+} from "react-bootstrap";
+import { useAuth } from "../contexts/AuthContext";
+import api from "../services/api";
 
 const PetDetail = () => {
   const { id } = useParams();
   const { user } = useAuth();
+
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
   const [submittingRating, setSubmittingRating] = useState(false);
 
   useEffect(() => {
+    const fetchPet = async () => {
+      try {
+        const response = await api.get(`/pets/${id}`);
+        setPet(response.data.data);
+      } catch (error) {
+        setError("Pet not found");
+        console.error("Error fetching pet:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchPet();
   }, [id]);
 
-  const fetchPet = async () => {
-    try {
-      const response = await api.get(`/pets/${id}`);
-      setPet(response.data.data);
-    } catch (error) {
-      setError('Pet not found');
-      console.error('Error fetching pet:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleVote = async (voteType) => {
     if (!user) return;
-    
+
     try {
       await api.post(`/pets/${id}/vote`, { voteType });
-      fetchPet(); // Refresh pet data
+      const refreshed = await api.get(`/pets/${id}`);
+      setPet(refreshed.data.data);
     } catch (error) {
-      console.error('Error voting:', error);
+      console.error("Error voting:", error);
     }
   };
 
   const handleRating = async (e) => {
     e.preventDefault();
     if (!user || submittingRating) return;
-    
+
     setSubmittingRating(true);
     try {
       await api.post(`/pets/${id}/rate`, { rating, comment });
-      setComment('');
-      fetchPet(); // Refresh pet data
+      setComment("");
+      const refreshed = await api.get(`/pets/${id}`);
+      setPet(refreshed.data.data);
     } catch (error) {
-      console.error('Error submitting rating:', error);
+      console.error("Error submitting rating:", error);
     } finally {
       setSubmittingRating(false);
     }
@@ -59,7 +72,7 @@ const PetDetail = () => {
 
   if (loading) {
     return (
-      <Container className="py-5 text-center" style={{ marginTop: '80px' }}>
+      <Container className="py-5 text-center" style={{ marginTop: "80px" }}>
         <Spinner animation="border" role="status">
           <span className="visually-hidden">Loading...</span>
         </Spinner>
@@ -69,7 +82,7 @@ const PetDetail = () => {
 
   if (error || !pet) {
     return (
-      <Container className="py-5" style={{ marginTop: '80px' }}>
+      <Container className="py-5" style={{ marginTop: "80px" }}>
         <Alert variant="danger">
           <h4>Pet Not Found</h4>
           <p>The pet you're looking for doesn't exist or has been removed.</p>
@@ -82,31 +95,36 @@ const PetDetail = () => {
   }
 
   return (
-    <Container className="py-5" style={{ marginTop: '80px' }}>
+    <Container className="py-5" style={{ marginTop: "80px" }}>
       <Row>
         <Col md={6}>
           <Card>
-            <Card.Img 
-              variant="top" 
-              src={pet.image} 
+            <Card.Img
+              variant="top"
+              src={pet.image}
               alt={pet.name}
-              style={{ height: '400px', objectFit: 'contain' }}
+              style={{ height: "400px", objectFit: "contain" }}
             />
           </Card>
         </Col>
-        
+
         <Col md={6}>
           <div className="d-flex justify-content-between align-items-start mb-3">
             <h1>{pet.name}</h1>
-            <Badge bg={pet.available ? 'success' : 'secondary'} className="fs-6">
-              {pet.available ? 'Available' : 'Adopted'}
+            <Badge
+              bg={pet.available ? "success" : "secondary"}
+              className="fs-6"
+            >
+              {pet.available ? "Available" : "Adopted"}
             </Badge>
           </div>
-          
+
           <h3 className="text-success mb-3">
-            ${typeof pet.price === 'number' ? pet.price.toLocaleString() : pet.price}
+            {typeof pet.price === "number"
+              ? `$${pet.price.toLocaleString()}`
+              : pet.price}
           </h3>
-          
+
           <Card className="mb-3">
             <Card.Body>
               <Row>
@@ -123,20 +141,19 @@ const PetDetail = () => {
               </Row>
             </Card.Body>
           </Card>
-          
+
           <Card className="mb-3">
             <Card.Body>
               <Card.Title>Description</Card.Title>
               <Card.Text>{pet.description}</Card.Text>
             </Card.Body>
           </Card>
-          
-          {/* Voting */}
+
           {user && (
             <div className="d-flex gap-2 mb-3">
               <Button
                 variant="outline-success"
-                onClick={() => handleVote('up')}
+                onClick={() => handleVote("up")}
                 disabled={!pet.available}
               >
                 <i className="fas fa-thumbs-up me-1"></i>
@@ -144,7 +161,7 @@ const PetDetail = () => {
               </Button>
               <Button
                 variant="outline-danger"
-                onClick={() => handleVote('down')}
+                onClick={() => handleVote("down")}
                 disabled={!pet.available}
               >
                 <i className="fas fa-thumbs-down me-1"></i>
@@ -152,20 +169,18 @@ const PetDetail = () => {
               </Button>
             </div>
           )}
-          
-          {/* Contact Button */}
+
           <Link to="/contact" className="btn btn-primary btn-lg">
             <i className="fas fa-envelope me-2"></i>
             Contact About {pet.name}
           </Link>
         </Col>
       </Row>
-      
-      {/* Ratings Section */}
+
       <Row className="mt-5">
         <Col>
           <h3>Ratings & Reviews</h3>
-          
+
           {pet.ratings && pet.ratings.length > 0 && (
             <div className="mb-3">
               <div className="d-flex align-items-center mb-2">
@@ -173,21 +188,25 @@ const PetDetail = () => {
                 <div>
                   <div>
                     {[...Array(5)].map((_, i) => (
-                      <i 
+                      <i
                         key={i}
-                        className={`fas fa-star ${i < Math.floor(pet.averageRating) ? 'text-warning' : 'text-muted'}`}
+                        className={`fas fa-star ${
+                          i < Math.floor(pet.averageRating)
+                            ? "text-warning"
+                            : "text-muted"
+                        }`}
                       ></i>
                     ))}
                   </div>
                   <small className="text-muted">
-                    Based on {pet.ratings.length} review{pet.ratings.length !== 1 ? 's' : ''}
+                    Based on {pet.ratings.length} review
+                    {pet.ratings.length !== 1 ? "s" : ""}
                   </small>
                 </div>
               </div>
             </div>
           )}
-          
-          {/* Add Rating Form */}
+
           {user && (
             <Card className="mb-4">
               <Card.Body>
@@ -195,8 +214,8 @@ const PetDetail = () => {
                 <Form onSubmit={handleRating}>
                   <Form.Group className="mb-3">
                     <Form.Label>Rating</Form.Label>
-                    <Form.Select 
-                      value={rating} 
+                    <Form.Select
+                      value={rating}
                       onChange={(e) => setRating(parseInt(e.target.value))}
                     >
                       <option value={5}>5 Stars - Excellent</option>
@@ -206,7 +225,7 @@ const PetDetail = () => {
                       <option value={1}>1 Star - Poor</option>
                     </Form.Select>
                   </Form.Group>
-                  
+
                   <Form.Group className="mb-3">
                     <Form.Label>Comment (Optional)</Form.Label>
                     <Form.Control
@@ -217,44 +236,46 @@ const PetDetail = () => {
                       placeholder="Share your thoughts about this pet..."
                     />
                   </Form.Group>
-                  
-                  <Button 
-                    type="submit" 
+
+                  <Button
+                    type="submit"
                     variant="primary"
                     disabled={submittingRating}
                   >
-                    {submittingRating ? 'Submitting...' : 'Submit Review'}
+                    {submittingRating ? "Submitting..." : "Submit Review"}
                   </Button>
                 </Form>
               </Card.Body>
             </Card>
           )}
-          
-          {/* Display Reviews */}
-          {pet.ratings && pet.ratings.map((review, index) => (
-            <Card key={index} className="mb-3">
-              <Card.Body>
-                <div className="d-flex justify-content-between align-items-start mb-2">
-                  <div>
-                    <strong>{review.user?.username || 'Anonymous'}</strong>
+
+          {pet.ratings &&
+            pet.ratings.map((review, index) => (
+              <Card key={index} className="mb-3">
+                <Card.Body>
+                  <div className="d-flex justify-content-between align-items-start mb-2">
                     <div>
-                      {[...Array(5)].map((_, i) => (
-                        <i 
-                          key={i}
-                          className={`fas fa-star ${i < review.rating ? 'text-warning' : 'text-muted'}`}
-                        ></i>
-                      ))}
+                      <strong>{review.user?.username || "Anonymous"}</strong>
+                      <div>
+                        {[...Array(5)].map((_, i) => (
+                          <i
+                            key={i}
+                            className={`fas fa-star ${
+                              i < review.rating ? "text-warning" : "text-muted"
+                            }`}
+                          ></i>
+                        ))}
+                      </div>
                     </div>
+                    <small className="text-muted">
+                      {new Date(review.createdAt).toLocaleDateString()}
+                    </small>
                   </div>
-                  <small className="text-muted">
-                    {new Date(review.createdAt).toLocaleDateString()}
-                  </small>
-                </div>
-                {review.comment && <Card.Text>{review.comment}</Card.Text>}
-              </Card.Body>
-            </Card>
-          ))}
-          
+                  {review.comment && <Card.Text>{review.comment}</Card.Text>}
+                </Card.Body>
+              </Card>
+            ))}
+
           {(!pet.ratings || pet.ratings.length === 0) && (
             <Alert variant="info">
               No reviews yet. Be the first to review {pet.name}!

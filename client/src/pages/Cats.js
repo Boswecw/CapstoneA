@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import PetCard from '../components/PetCard';
-import api from '../services/api';
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Spinner, Alert } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import PetCard from "../components/PetCard";
+import api from "../services/api";
 
 const Cats = () => {
   const [cats, setCats] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchCats();
@@ -15,29 +15,34 @@ const Cats = () => {
 
   const fetchCats = async () => {
     try {
-      const response = await api.get('/pets/type/cat');
+      const response = await api.get("/pets/type/cat");
       setCats(response.data.data);
     } catch (error) {
-      setError('Error fetching cats. Please try again.');
-      console.error('Error fetching cats:', error);
+      setError("Error fetching cats. Please try again.");
+      console.error("Error fetching cats:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleVote = (petId, voteType) => {
-    setCats(prev => prev.map(cat => {
-      if (cat._id === petId) {
-        const newCat = { ...cat };
-        if (voteType === 'up') {
-          newCat.votes = { ...newCat.votes, up: (newCat.votes?.up || 0) + 1 };
-        } else {
-          newCat.votes = { ...newCat.votes, down: (newCat.votes?.down || 0) + 1 };
+    setCats((prev) =>
+      prev.map((cat) => {
+        if (cat._id === petId) {
+          const newCat = { ...cat };
+          if (voteType === "up") {
+            newCat.votes = { ...newCat.votes, up: (newCat.votes?.up || 0) + 1 };
+          } else {
+            newCat.votes = {
+              ...newCat.votes,
+              down: (newCat.votes?.down || 0) + 1,
+            };
+          }
+          return newCat;
         }
-        return newCat;
-      }
-      return cat;
-    }));
+        return cat;
+      }),
+    );
   };
 
   return (
@@ -52,7 +57,8 @@ const Cats = () => {
                 Cats Available for Adoption
               </h1>
               <p className="hero-subtitle">
-                <i className="fas fa-heart me-2"></i>Find Your Perfect Feline Friend
+                <i className="fas fa-heart me-2"></i>Find Your Perfect Feline
+                Friend
               </p>
               <Link to="/browse" className="btn btn-lg btn-light px-4 py-2">
                 <i className="fas fa-search me-2"></i>Browse All Pets
@@ -91,18 +97,19 @@ const Cats = () => {
           <>
             <div className="mb-3">
               <span className="text-muted">
-                {cats.length} cat{cats.length !== 1 ? 's' : ''} available for adoption
+                {cats.length} cat{cats.length !== 1 ? "s" : ""} available for
+                adoption
               </span>
             </div>
-            
+
             <Row className="g-4">
-              {cats.map(cat => (
+              {cats.map((cat) => (
                 <Col key={cat._id} sm={6} md={4} lg={3}>
                   <PetCard pet={cat} onVote={handleVote} />
                 </Col>
               ))}
             </Row>
-            
+
             {cats.length === 0 && (
               <div className="text-center py-5">
                 <i className="fas fa-cat fa-3x text-muted mb-3"></i>

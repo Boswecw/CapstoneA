@@ -1,44 +1,50 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
-import { useAuth } from '../contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+import React, { useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Form,
+  Button,
+  Alert,
+} from "react-bootstrap";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useCart } from "../contexts/CartContext";
 
 const Checkout = () => {
   const { user } = useAuth();
+ const { items: cartItems = [], cartTotal = 0, clearCart } = useCart();
+
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    address: '',
-    city: '',
-    zipCode: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: ''
+    firstName: "",
+    lastName: "",
+    email: "",
+    address: "",
+    city: "",
+    zipCode: "",
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Redirect if not logged in
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
+  if (!user) return <Navigate to="/login" />;
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Simulate checkout process
+
     setTimeout(() => {
       setLoading(false);
       setSuccess(true);
+      clearCart();
     }, 2000);
   };
 
@@ -49,13 +55,19 @@ const Checkout = () => {
           <Col md={6}>
             <Alert variant="success" className="text-center">
               <h4>Order Placed Successfully!</h4>
-              <p>Thank you for your purchase. You will receive a confirmation email shortly.</p>
+              <p>
+                Thank you for your purchase. You will receive a confirmation
+                email shortly.
+              </p>
             </Alert>
           </Col>
         </Row>
       </Container>
     );
   }
+
+  const tax = cartTotal * 0.08;
+  const finalTotal = cartTotal + tax;
 
   return (
     <Container className="py-5">
@@ -187,30 +199,55 @@ const Checkout = () => {
                   </Col>
                 </Row>
 
-                <Button 
-                  type="submit" 
-                  variant="primary" 
-                  size="lg" 
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
                   className="w-100"
                   disabled={loading}
                 >
-                  {loading ? 'Processing...' : 'Place Order'}
+                  {loading ? "Processing..." : "Place Order"}
                 </Button>
               </Form>
             </Card.Body>
           </Card>
         </Col>
+
         <Col md={4}>
           <Card>
             <Card.Header>
               <h5>Order Summary</h5>
             </Card.Header>
             <Card.Body>
-              <p>Your cart items will appear here</p>
-              <hr />
-              <div className="d-flex justify-content-between">
-                <strong>Total: $0.00</strong>
-              </div>
+              {cartItems.length === 0 ? (
+                <p>Your cart is empty.</p>
+              ) : (
+                <>
+                  {cartItems.map((item) => (
+                    <div
+                      key={item._id}
+                      className="d-flex justify-content-between mb-2"
+                    >
+                      <span>{item.name} × {item.quantity}</span>
+                      <span>${(item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                  ))}
+                  <hr />
+                  <div className="d-flex justify-content-between">
+                    <span>Subtotal:</span>
+                    <span>${cartTotal.toFixed(2)}</span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <span>Tax (8%):</span>
+                    <span>${tax.toFixed(2)}</span>
+                  </div>
+                  <hr />
+                  <div className="d-flex justify-content-between fw-bold">
+                    <span>Total:</span>
+                    <span>${finalTotal.toFixed(2)}</span>
+                  </div>
+                </>
+              )}
             </Card.Body>
           </Card>
         </Col>
