@@ -1,9 +1,8 @@
-// server/controllers/petController.js
-
-const mongoose = require("mongoose");
-const rateLimit = require("express-rate-limit");
-const Pet = require("../models/Pet");
-const User = require("../models/User");
+// server/controllers/petController.js - ES6 Module Version
+import mongoose from "mongoose";
+import rateLimit from "express-rate-limit";
+import Pet from "../models/Pet.js";
+import User from "../models/User.js";
 
 // Rate limiter for voting/ratings
 const votingRateLimit = rateLimit({
@@ -239,7 +238,6 @@ const getFeaturedPets = async (req, res) => {
   }
 };
 
-// Placeholder functions to preserve exports
 const getAllPets = async (req, res) => {
   try {
     const sortOption = req.query.sort;
@@ -290,6 +288,7 @@ const getPetsByType = async (req, res) => {
   }
 };
 
+// Placeholder functions to preserve exports
 const createPet = async (req, res) => {
   res
     .status(501)
@@ -314,8 +313,8 @@ const votePet = async (req, res) => {
     .json({ success: false, message: "votePet not implemented yet" });
 };
 
-// Export all controllers
-module.exports = {
+// ✅ ES6 Export - Default export with all functions
+export default {
   getAllPets,
   getFeaturedPets,
   getPetsByType,
@@ -325,4 +324,7 @@ module.exports = {
   deletePet,
   votePet,
   ratePet,
+  bulkUpdatePets,
+  getPetStats,
+  votingRateLimit,
 };

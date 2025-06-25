@@ -1,10 +1,8 @@
-// server/routes/pets.js
-
-const express = require("express");
-const router = express.Router();
-const petController = require("../controllers/petController");
-const { auth } = require("../middleware/auth");
-const {
+// server/routes/pets.js - ES6 Module Version
+import express from "express";
+import petController from "../controllers/petController.js";
+import { auth } from "../middleware/auth.js";
+import {
   validatePet,
   validatePetUpdate,
   validateRating,
@@ -12,7 +10,9 @@ const {
   handleValidationErrors,
   sanitizeInput,
   generalRateLimit,
-} = require("../middleware/validation");
+} from "../middleware/validation.js";
+
+const router = express.Router();
 
 // ✅ Apply rate limiting and sanitization globally to pet routes
 router.use(generalRateLimit);
@@ -59,4 +59,4 @@ router.post(
   petController.ratePet,
 );
 
-module.exports = router;
+export default router;

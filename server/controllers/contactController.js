@@ -1,5 +1,5 @@
-// server/controllers/contactController.js
-const Contact = require("../models/Contact");
+// server/controllers/contactController.js - ES6 Module Version
+import Contact from "../models/Contact.js";
 
 // 📬 Submit contact form
 const submitContact = async (req, res) => {
@@ -154,8 +154,8 @@ const updateContactStatus = async (req, res) => {
   }
 };
 
-// ✅ Export all
-module.exports = {
+// ✅ ES6 Export - Default export with all functions
+export default {
   submitContact,
   getAllContacts,
   getContactById,

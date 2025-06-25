@@ -1,7 +1,8 @@
-// server/routes/products.js
-const express = require('express');
+// server/routes/products.js - ES6 Module Version
+import express from 'express';
+import { auth } from '../middleware/auth.js';
+
 const router = express.Router();
-const { auth } = require('../middleware/auth');
 
 // Sample products data (since we don't have a Product model yet)
 const sampleProducts = [
@@ -273,4 +274,4 @@ router.post('/', auth, (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

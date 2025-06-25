@@ -1,14 +1,15 @@
-// server/routes/contact.js (Updated with validation)
-const express = require("express");
-const router = express.Router();
-const contactController = require("../controllers/contactController");
-const { auth, adminAuth } = require("../middleware/auth");
-const {
+// server/routes/contact.js - ES6 Module Version (Updated with validation)
+import express from "express";
+import contactController from "../controllers/contactController.js";
+import { auth, adminAuth } from "../middleware/auth.js";
+import {
   validateContact,
   handleValidationErrors,
   sanitizeInput,
   contactRateLimit,
-} = require("../middleware/validation");
+} from "../middleware/validation.js";
+
+const router = express.Router();
 
 // Apply input sanitization to all routes
 router.use(sanitizeInput);
@@ -33,4 +34,4 @@ router.put(
   contactController.updateContactStatus,
 );
 
-module.exports = router;
+export default router;

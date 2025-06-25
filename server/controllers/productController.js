@@ -1,6 +1,6 @@
-// server/models/Product.js
-const Product = require("../models/Product");
-const User = require("../models/User");
+// server/controllers/productController.js - ES6 Module Version
+import Product from "../models/Product.js";
+import User from "../models/User.js";
 
 // Sample data for fallback (if no database)
 const sampleProducts = [
@@ -76,42 +76,6 @@ const sampleProducts = [
     ratings: [],
     votes: { up: 8, down: 1 },
     averageRating: 4.3,
-    createdAt: new Date(),
-  },
-  {
-    _id: "5",
-    name: "Bird Cage Deluxe",
-    category: "accessories",
-    brand: "FeatherHome",
-    price: 125.0,
-    image: "/images/bird-cage.jpg",
-    description: "Spacious and secure home for your feathered friends.",
-    inStock: true,
-    stockQuantity: 5,
-    petTypes: ["bird"],
-    size: "large",
-    featured: false,
-    ratings: [],
-    votes: { up: 6, down: 0 },
-    averageRating: 4.7,
-    createdAt: new Date(),
-  },
-  {
-    _id: "6",
-    name: "Pet Grooming Kit",
-    category: "grooming",
-    brand: "CleanPaws",
-    price: 35.99,
-    image: "/images/grooming-kit.jpg",
-    description: "Complete grooming solution for all pets.",
-    inStock: true,
-    stockQuantity: 30,
-    petTypes: ["dog", "cat"],
-    size: "medium",
-    featured: false,
-    ratings: [],
-    votes: { up: 10, down: 2 },
-    averageRating: 4.2,
     createdAt: new Date(),
   },
 ];
@@ -558,7 +522,8 @@ const rateProduct = async (req, res) => {
   }
 };
 
-module.exports = {
+// ✅ ES6 Export - Default export with all functions
+export default {
   getAllProducts,
   getFeaturedProducts,
   getProductsByCategory,

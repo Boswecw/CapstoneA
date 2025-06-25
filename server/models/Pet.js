@@ -1,268 +1,262 @@
-// server/models/Pet.js - Enhanced version with additional features
-const mongoose = require("mongoose");
+import { Schema, model } from 'mongoose';
 
-const petSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: [true, 'Pet name is required'],
-      trim: true,
-      maxlength: [50, 'Name cannot exceed 50 characters']
-    },
-    type: {
-      type: String,
-      required: [true, 'Pet type is required'],
-      enum: ["dog", "cat", "fish", "bird", "small-pet", "supply"],
-      lowercase: true,
-      index: true // Add index for faster queries
-    },
-    breed: {
-      type: String,
-      required: [true, 'Breed is required'],
-      trim: true,
-      maxlength: [50, 'Breed cannot exceed 50 characters']
-    },
-    age: {
-      type: String,
-      required: [true, 'Age is required'],
-      trim: true
-    },
-    price: {
-      type: Number,
-      required: [true, 'Price is required'],
-      min: [0, 'Price cannot be negative'],
-      validate: {
-        validator: function(v) {
-          return v >= 0;
-        },
-        message: 'Price must be a positive number'
-      }
-    },
-    description: {
-      type: String,
-      required: [true, 'Description is required'],
-      trim: true,
-      maxlength: [1000, 'Description cannot exceed 1000 characters']
-    },
-    image: {
-      type: String,
-      required: [true, 'Image is required'],
-      default: '/images/default-pet.jpg'
-    },
-    images: [{
-      type: String,
-      validate: {
-        validator: function(v) {
-          return /^\/images\/.*\.(jpg|jpeg|png|gif|webp)$/i.test(v);
-        },
-        message: 'Invalid image URL format'
-      }
-    }], // Additional images
-    available: {
-      type: Boolean,
-      default: true,
-      index: true // Add index for faster queries
-    },
-    featured: {
-      type: Boolean,
-      default: false,
-      index: true // Add index for featured pets
-    },
-    votes: {
-      up: { type: Number, default: 0, min: 0 },
-      down: { type: Number, default: 0, min: 0 },
-    },
-    ratings: [
-      {
-        user: { 
-          type: mongoose.Schema.Types.ObjectId, 
-          ref: "User",
-          required: true
-        },
-        rating: { 
-          type: Number, 
-          min: [1, 'Rating must be at least 1'], 
-          max: [5, 'Rating cannot exceed 5'],
-          required: true
-        },
-        comment: {
-          type: String,
-          trim: true,
-          maxlength: [500, 'Comment cannot exceed 500 characters']
-        },
-        createdAt: { type: Date, default: Date.now },
-      },
-    ],
-    size: {
-      type: String,
-      enum: ["small", "medium", "large", "extra-large"],
-      lowercase: true,
-      required: function () {
-        // Only require size for animals, not supplies
-        return this.type !== "supply";
-      },
-    },
-    gender: {
-      type: String,
-      enum: ["male", "female"],
-      lowercase: true,
-      required: function () {
-        // Only require gender for dogs, cats, birds, and small-pets
-        // NOT for fish or supplies
-        return ["dog", "cat", "bird", "small-pet"].includes(this.type);
-      },
-    },
-    // Additional useful fields
-    characteristics: [{
-      type: String,
-      trim: true,
-      maxlength: [30, 'Characteristic cannot exceed 30 characters']
-    }], // e.g., ["friendly", "house-trained", "good with kids"]
-    
-    healthInfo: {
-      vaccinated: { type: Boolean, default: false },
-      spayed: { type: Boolean, default: false },
-      microchipped: { type: Boolean, default: false },
-      specialNeeds: { 
-        type: String, 
-        trim: true,
-        maxlength: [200, 'Special needs description too long']
-      }
-    },
-    
-    location: {
-      shelter: { 
-        type: String, 
-        default: 'FurBabies Main Location',
-        trim: true
-      },
-      city: { type: String, default: 'Louisville', trim: true },
-      state: { type: String, default: 'KY', trim: true }
-    },
-    
-    adoptionStatus: {
-      type: String,
-      enum: ["available", "pending", "adopted", "hold"],
-      default: "available",
-      index: true
-    },
-    
-    adoptionFee: {
-      type: Number,
-      min: [0, 'Adoption fee cannot be negative'],
-      default: function() {
-        return this.price; // Use price as default adoption fee
-      }
-    },
-    
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
+// Cloud Storage Image Schema
+const cloudImageSchema = new Schema({
+  fileName: { type: String, required: true },
+  originalName: String,
+  publicUrl: { type: String, required: true },
+  thumbnailUrl: String,
+  gsUrl: String, // Google Storage URL (gs://bucket/file)
+  bucketName: String,
+  size: Number,
+  contentType: String,
+  uploadDate: { type: Date, default: Date.now },
+  folder: String, // pets, products, etc.
+  isMain: { type: Boolean, default: false },
+  tags: [String],
+  description: String,
+  metadata: {
+    width: Number,
+    height: Number,
+    processed: { type: Boolean, default: false }
+  }
+});
+
+const petSchema = new Schema({
+  // Basic Information
+  name: {
+    type: String,
+    required: [true, 'Pet name is required'],
+    trim: true,
+    maxlength: [50, 'Name cannot exceed 50 characters']
+  },
+  type: {
+    type: String,
+    required: [true, 'Pet type is required'],
+    enum: ["dog", "cat", "fish", "bird", "small-pet", "supply"],
+    lowercase: true,
+    index: true
+  },
+  breed: {
+    type: String,
+    required: [true, 'Breed is required'],
+    trim: true,
+    maxlength: [50, 'Breed cannot exceed 50 characters']
+  },
+  age: {
+    type: String,
+    required: [true, 'Age is required'],
+    trim: true
+  },
+  price: {
+    type: Number,
+    required: [true, 'Price is required'],
+    min: [0, 'Price cannot be negative']
+  },
+  description: {
+    type: String,
+    required: [true, 'Description is required'],
+    trim: true,
+    maxlength: [1000, 'Description cannot exceed 1000 characters']
+  },
+
+  // Status Fields
+  available: {
+    type: Boolean,
+    default: true,
+    index: true
+  },
+  featured: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+
+  // User Interaction
+  votes: {
+    up: { type: Number, default: 0, min: 0 },
+    down: { type: Number, default: 0, min: 0 }
+  },
+  ratings: [{
+    user: { 
+      type: Schema.Types.ObjectId, 
       ref: "User",
+      required: true
     },
-    
-    // Tracking fields
-    views: { type: Number, default: 0, min: 0 },
-    favoriteCount: { type: Number, default: 0, min: 0 },
-    
-    // SEO and search optimization
-    tags: [{
+    rating: { 
+      type: Number, 
+      min: [1, 'Rating must be at least 1'], 
+      max: [5, 'Rating cannot exceed 5'],
+      required: true
+    },
+    comment: {
       type: String,
-      lowercase: true,
-      trim: true
-    }], // e.g., ["puppy", "large-breed", "family-friendly"]
-    
-    // For supply items
-    inStock: {
-      type: Boolean,
-      default: true,
-      required: function() {
-        return this.type === "supply";
-      }
+      trim: true,
+      maxlength: [500, 'Comment cannot exceed 500 characters']
     },
-    
-    stockQuantity: {
-      type: Number,
-      min: [0, 'Stock quantity cannot be negative'],
-      default: function() {
-        return this.type === "supply" ? 0 : undefined;
-      }
+    createdAt: { type: Date, default: Date.now }
+  }],
+
+  // Physical Characteristics
+  size: {
+    type: String,
+    enum: ["small", "medium", "large", "extra-large"],
+    lowercase: true,
+    required: function () {
+      return this.type !== "supply";
     }
   },
-  {
-    timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
-  }
-);
+  gender: {
+    type: String,
+    enum: ["male", "female"],
+    lowercase: true,
+    required: function () {
+      return ["dog", "cat", "bird", "small-pet"].includes(this.type);
+    }
+  },
+  characteristics: [{
+    type: String,
+    trim: true,
+    maxlength: [30, 'Characteristic cannot exceed 30 characters']
+  }],
 
-// Virtual for average rating (your existing code)
-petSchema.virtual("averageRating").get(function () {
+  // Health Information
+  healthInfo: {
+    vaccinated: { type: Boolean, default: false },
+    spayed: { type: Boolean, default: false },
+    microchipped: { type: Boolean, default: false },
+    specialNeeds: { 
+      type: String, 
+      trim: true,
+      maxlength: [200, 'Special needs description too long']
+    }
+  },
+
+  // Location Information
+  location: {
+    shelter: { 
+      type: String, 
+      default: 'FurBabies Main Location',
+      trim: true
+    },
+    city: { type: String, default: 'Louisville', trim: true },
+    state: { type: String, default: 'KY', trim: true }
+  },
+
+  // Adoption Information
+  adoptionStatus: {
+    type: String,
+    enum: ["available", "pending", "adopted", "hold"],
+    default: "available",
+    index: true
+  },
+
+  // Administrative Fields
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: "User"
+  },
+  views: { type: Number, default: 0, min: 0 },
+  favoriteCount: { type: Number, default: 0, min: 0 },
+  tags: [{
+    type: String,
+    lowercase: true,
+    trim: true
+  }],
+
+  // Supply-specific fields
+  inStock: {
+    type: Boolean,
+    default: true,
+    required: function() {
+      return this.type === "supply";
+    }
+  },
+  stockQuantity: {
+    type: Number,
+    min: [0, 'Stock quantity cannot be negative'],
+    default: function() {
+      return this.type === "supply" ? 1 : undefined;
+    }
+  },
+
+  // ✨ CLOUD STORAGE FIELDS ✨
+  cloudImages: [cloudImageSchema],
+  mainCloudImageId: String,
+  imageGallery: {
+    profile: [cloudImageSchema],
+    action: [cloudImageSchema],
+    medical: [cloudImageSchema]
+  },
+  
+  // Legacy image field for backward compatibility
+  image: {
+    type: String,
+    default: '/images/default-pet.jpg'
+  }
+}, { 
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+// ✨ VIRTUAL PROPERTIES ✨
+
+// Virtual for main image URL
+petSchema.virtual('imageUrl').get(function() {
+  if (this.mainCloudImageId) {
+    const mainImage = this.cloudImages.find(img => img._id.toString() === this.mainCloudImageId);
+    return mainImage ? mainImage.publicUrl : this.image;
+  }
+  return this.cloudImages.length > 0 ? this.cloudImages[0].publicUrl : this.image;
+});
+
+// Virtual for thumbnail URL
+petSchema.virtual('thumbnailUrl').get(function() {
+  if (this.mainCloudImageId) {
+    const mainImage = this.cloudImages.find(img => img._id.toString() === this.mainCloudImageId);
+    return mainImage ? (mainImage.thumbnailUrl || mainImage.publicUrl) : this.image;
+  }
+  return this.cloudImages.length > 0 ? 
+    (this.cloudImages[0].thumbnailUrl || this.cloudImages[0].publicUrl) : this.image;
+});
+
+// Virtual for average rating
+petSchema.virtual('averageRating').get(function() {
   if (this.ratings.length === 0) return 0;
   const total = this.ratings.reduce((sum, rating) => sum + rating.rating, 0);
   return (total / this.ratings.length).toFixed(1);
 });
 
-// Virtual for total ratings count
-petSchema.virtual("totalRatings").get(function () {
-  return this.ratings.length;
+// Virtual for popularity score
+petSchema.virtual('popularityScore').get(function() {
+  const voteScore = this.votes.up - this.votes.down;
+  const ratingScore = this.averageRating * this.ratings.length;
+  return voteScore + ratingScore;
 });
 
-// Virtual for vote score (up votes - down votes)
-petSchema.virtual("voteScore").get(function () {
-  return (this.votes.up || 0) - (this.votes.down || 0);
+// Virtual for full image count
+petSchema.virtual('totalImages').get(function() {
+  return this.cloudImages.length;
 });
 
-// Virtual for popularity score (combination of views, ratings, and votes)
-petSchema.virtual("popularityScore").get(function () {
-  const ratingScore = parseFloat(this.averageRating) * this.totalRatings;
-  const voteScore = this.voteScore;
-  const viewScore = this.views * 0.1;
-  return ratingScore + voteScore + viewScore;
-});
+// ✨ MIDDLEWARE ✨
 
-// Indexes for better performance
-petSchema.index({ type: 1, available: 1 });
-petSchema.index({ featured: 1, available: 1 });
-petSchema.index({ price: 1 });
-petSchema.index({ createdAt: -1 });
-petSchema.index({ adoptionStatus: 1 });
-
-// Text index for search functionality
-petSchema.index({ 
-  name: 'text', 
-  breed: 'text', 
-  description: 'text',
-  characteristics: 'text',
-  tags: 'text'
-});
-
-// Compound indexes for common queries
-petSchema.index({ type: 1, size: 1, available: 1 });
-petSchema.index({ type: 1, price: 1 });
-
-// Pre-save middleware for additional processing
+// Pre-save middleware
 petSchema.pre('save', function(next) {
-  // Auto-generate tags based on pet info
-  if (this.isNew || this.isModified(['name', 'breed', 'type', 'size'])) {
-    this.tags = this.tags || [];
+  // Update tags based on other fields
+  if (this.isModified('type') || this.isModified('size') || this.isModified('age')) {
+    const autoTags = [];
     
-    // Add type-specific tags
-    if (!this.tags.includes(this.type)) {
-      this.tags.push(this.type);
-    }
+    if (this.type) autoTags.push(this.type);
+    if (this.size) autoTags.push(this.size);
+    if (this.age.includes('puppy') || this.age.includes('kitten')) autoTags.push('young');
+    if (this.age.includes('senior')) autoTags.push('senior');
+    if (this.healthInfo.vaccinated) autoTags.push('vaccinated');
+    if (this.healthInfo.spayed) autoTags.push('spayed');
     
-    // Add size tag
-    if (this.size && !this.tags.includes(this.size)) {
-      this.tags.push(this.size);
-    }
-    
-    // Add breed-related tags
-    const breedWords = this.breed.toLowerCase().split(' ');
-    breedWords.forEach(word => {
-      if (word.length > 2 && !this.tags.includes(word)) {
-        this.tags.push(word);
-      }
-    });
+    // Merge with existing tags (avoid duplicates)
+    this.tags = [...new Set([...this.tags, ...autoTags])];
   }
   
   // Update availability based on adoption status
@@ -273,7 +267,8 @@ petSchema.pre('save', function(next) {
   next();
 });
 
-// Static methods for common queries
+// ✨ STATIC METHODS ✨
+
 petSchema.statics.findAvailable = function() {
   return this.find({ available: true, adoptionStatus: 'available' });
 };
@@ -292,7 +287,17 @@ petSchema.statics.findPopular = function() {
     .limit(10);
 };
 
-// Instance methods
+petSchema.statics.findWithImages = function() {
+  return this.find({ 
+    $or: [
+      { 'cloudImages.0': { $exists: true } },
+      { image: { $ne: '/images/default-pet.jpg' } }
+    ]
+  });
+};
+
+// ✨ INSTANCE METHODS ✨
+
 petSchema.methods.incrementViews = function() {
   this.views = (this.views || 0) + 1;
   return this.save();
@@ -308,4 +313,70 @@ petSchema.methods.removeFromFavorites = function() {
   return this.save();
 };
 
-module.exports = mongoose.model("Pet", petSchema);
+petSchema.methods.addCloudImage = function(imageData, category = 'profile') {
+  // Add to main images array
+  this.cloudImages.push(imageData);
+  
+  // Add to appropriate gallery
+  if (!this.imageGallery[category]) {
+    this.imageGallery[category] = [];
+  }
+  this.imageGallery[category].push(imageData);
+  
+  // Set as main image if it's the first one
+  if (!this.mainCloudImageId) {
+    this.mainCloudImageId = imageData._id;
+    imageData.isMain = true;
+  }
+  
+  return this.save();
+};
+
+petSchema.methods.removeCloudImage = function(imageId) {
+  // Remove from main images
+  this.cloudImages = this.cloudImages.filter(img => img._id.toString() !== imageId);
+  
+  // Remove from galleries
+  Object.keys(this.imageGallery).forEach(category => {
+    this.imageGallery[category] = this.imageGallery[category].filter(
+      img => img._id.toString() !== imageId
+    );
+  });
+  
+  // Update main image if needed
+  if (this.mainCloudImageId === imageId) {
+    this.mainCloudImageId = this.cloudImages.length > 0 ? this.cloudImages[0]._id : null;
+    if (this.cloudImages.length > 0) {
+      this.cloudImages[0].isMain = true;
+    }
+  }
+  
+  return this.save();
+};
+
+petSchema.methods.setMainImage = function(imageId) {
+  // Update all images
+  this.cloudImages.forEach(img => {
+    img.isMain = img._id.toString() === imageId;
+  });
+  
+  // Update galleries
+  Object.keys(this.imageGallery).forEach(category => {
+    this.imageGallery[category].forEach(img => {
+      img.isMain = img._id.toString() === imageId;
+    });
+  });
+  
+  this.mainCloudImageId = imageId;
+  return this.save();
+};
+
+// ✨ INDEXES ✨
+petSchema.index({ type: 1, available: 1 });
+petSchema.index({ adoptionStatus: 1, available: 1 });
+petSchema.index({ featured: 1, available: 1 });
+petSchema.index({ 'votes.up': -1, views: -1 });
+petSchema.index({ tags: 1 });
+petSchema.index({ createdAt: -1 });
+
+export default model('Pet', petSchema);
