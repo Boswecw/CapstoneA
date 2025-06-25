@@ -84,16 +84,16 @@ const Home = () => {
   return (
     <>
       {/* Hero Banner */}
-     <HeroBanner>
-  <div className="d-flex gap-3 justify-content-center flex-wrap">
-    <Link to="/browse" className="btn btn-lg btn-light px-4 py-2">
-      <i className="fas fa-paw me-2"></i>Browse Pets
-    </Link>
-    <Link to="/products" className="btn btn-lg btn-outline-light px-4 py-2">
-      <i className="fas fa-shopping-bag me-2"></i>Shop Products
-    </Link>
-  </div>
-</HeroBanner>
+      <HeroBanner>
+        <div className="d-flex gap-3 justify-content-center flex-wrap">
+          <Link to="/browse" className="btn btn-lg btn-light px-4 py-2">
+            <i className="fas fa-paw me-2"></i>Browse Pets
+          </Link>
+          <Link to="/products" className="btn btn-lg btn-outline-light px-4 py-2">
+            <i className="fas fa-shopping-bag me-2"></i>Shop Products
+          </Link>
+        </div>
+      </HeroBanner>
 
       {/* Cart Message */}
       {cartMessage && (
@@ -104,6 +104,50 @@ const Home = () => {
           </Alert>
         </Container>
       )}
+
+      {/* Quick Actions Section */}
+      <section className="py-4 bg-light">
+        <Container>
+          <Row className="g-3">
+            <Col md={3} sm={6}>
+              <Card className="h-100 text-center border-0 shadow-sm hover-lift">
+                <Card.Body className="py-4">
+                  <i className="fas fa-search fa-2x text-primary mb-3"></i>
+                  <h6 className="fw-bold">Find a Pet</h6>
+                  <small className="text-muted">Browse our adoptable friends</small>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={3} sm={6}>
+              <Card className="h-100 text-center border-0 shadow-sm hover-lift">
+                <Card.Body className="py-4">
+                  <i className="fas fa-calendar-alt fa-2x text-success mb-3"></i>
+                  <h6 className="fw-bold">Schedule Visit</h6>
+                  <small className="text-muted">Meet your potential companion</small>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={3} sm={6}>
+              <Card className="h-100 text-center border-0 shadow-sm hover-lift">
+                <Card.Body className="py-4">
+                  <i className="fas fa-shopping-cart fa-2x text-warning mb-3"></i>
+                  <h6 className="fw-bold">Pet Supplies</h6>
+                  <small className="text-muted">Everything your pet needs</small>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={3} sm={6}>
+              <Card className="h-100 text-center border-0 shadow-sm hover-lift">
+                <Card.Body className="py-4">
+                  <i className="fas fa-phone fa-2x text-info mb-3"></i>
+                  <h6 className="fw-bold">Get Support</h6>
+                  <small className="text-muted">Expert pet care advice</small>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </section>
 
       {/* Featured Products */}
       <section id="products" className="py-5">
@@ -225,6 +269,47 @@ const Home = () => {
           </Container>
         </section>
       )}
+
+      {/* Why Choose Us Section */}
+      <section className="py-5 bg-light">
+        <Container>
+          <div className="text-center mb-5">
+            <h2 className="mb-3">
+              <i className="fas fa-award me-2"></i>Why Choose FurBabies?
+            </h2>
+            <p className="text-muted">We're committed to connecting pets with loving families</p>
+          </div>
+          <Row className="g-4">
+            <Col md={4}>
+              <div className="text-center h-100">
+                <div className="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '80px', height: '80px' }}>
+                  <i className="fas fa-shield-alt fa-2x text-white"></i>
+                </div>
+                <h5>Health Guaranteed</h5>
+                <p className="text-muted">All pets are health-checked and vaccinated before adoption</p>
+              </div>
+            </Col>
+            <Col md={4}>
+              <div className="text-center h-100">
+                <div className="bg-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '80px', height: '80px' }}>
+                  <i className="fas fa-heart fa-2x text-white"></i>
+                </div>
+                <h5>Lifetime Support</h5>
+                <p className="text-muted">We provide ongoing support and advice for your pet's wellbeing</p>
+              </div>
+            </Col>
+            <Col md={4}>
+              <div className="text-center h-100">
+                <div className="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '80px', height: '80px' }}>
+                  <i className="fas fa-users fa-2x text-white"></i>
+                </div>
+                <h5>Perfect Matching</h5>
+                <p className="text-muted">We help match pets with families based on lifestyle and preferences</p>
+              </div>
+            </Col>
+          </Row>
+        </Container>
+      </section>
 
       {/* Testimonials */}
       <section id="reviews" className="py-5">
