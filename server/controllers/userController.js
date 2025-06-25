@@ -98,7 +98,7 @@ const registerUser = async (req, res) => {
   }
 };
 
-// Login user
+// Login user - FIXED COMPLETE VERSION
 const loginUser = async (req, res) => {
   try {
     console.log("🔍 Login attempt for:", req.body.email);
@@ -162,7 +162,7 @@ const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("❌ Login error:", error);
     res.status(500).json({
       success: false,
       message: "Server error during login",
@@ -190,8 +190,9 @@ const getUserProfile = async (req, res) => {
         email: user.email,
         role: user.role,
         profile: user.profile,
+        favoritesPets: user.favoritesPets,
         createdAt: user.createdAt,
-        lastLogin: user.lastLogin,
+        updatedAt: user.updatedAt,
       },
     });
   } catch (error) {
@@ -206,21 +207,18 @@ const getUserProfile = async (req, res) => {
 // Update user profile
 const updateUserProfile = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: errors.array(),
+      });
+    }
+
     const { firstName, lastName, phone, address } = req.body;
 
-    // Validate input data
-    const updateData = {};
-    if (firstName) updateData["profile.firstName"] = firstName.trim();
-    if (lastName) updateData["profile.lastName"] = lastName.trim();
-    if (phone) updateData["profile.phone"] = phone.trim();
-    if (address) updateData["profile.address"] = address.trim();
-
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      { $set: updateData },
-      { new: true, runValidators: true },
-    ).select("-password");
-
+    const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -228,10 +226,24 @@ const updateUserProfile = async (req, res) => {
       });
     }
 
+    // Update profile fields
+    if (firstName !== undefined) user.profile.firstName = firstName.trim();
+    if (lastName !== undefined) user.profile.lastName = lastName.trim();
+    if (phone !== undefined) user.profile.phone = phone.trim();
+    if (address !== undefined) user.profile.address = address;
+
+    await user.save();
+
     res.json({
       success: true,
       message: "Profile updated successfully",
-      data: user,
+      data: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        profile: user.profile,
+      },
     });
   } catch (error) {
     console.error("Update profile error:", error);

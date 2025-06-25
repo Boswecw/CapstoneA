@@ -1,4 +1,4 @@
-// server/models/Product.js
+// server/models/Product.js - Fixed version with correct enums
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
@@ -14,12 +14,14 @@ const productSchema = new mongoose.Schema(
       required: [true, "Product category is required"],
       enum: [
         "food",
-        "toys",
+        "toys", 
         "beds",
         "accessories",
         "health",
         "grooming",
         "training",
+        "housing",  // Added for aquarium kits
+        "supplies"  // Added for general supplies
       ],
       lowercase: true,
     },
@@ -73,7 +75,18 @@ const productSchema = new mongoose.Schema(
     ],
     size: {
       type: String,
-      enum: ["xs", "small", "medium", "large", "xl", "one-size"],
+      enum: [
+        "xs", 
+        "small", 
+        "medium", 
+        "large", 
+        "xl", 
+        "one-size",
+        "variety-pack",    // For toy sets
+        "large-bag",       // For food
+        "10-gallon",       // For aquarium kits
+        "starter-pack"     // For starter kits
+      ],
       lowercase: true,
     },
     weight: {
@@ -149,7 +162,8 @@ const productSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      // Made optional for seeding
+      required: false,
     },
   },
   {

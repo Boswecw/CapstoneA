@@ -1,7 +1,7 @@
 {
   "name": "furbabies-petstore",
   "version": "1.0.0",
-  "description": "FurBabies Pet Store MERN Stack Application",
+  "description": "FurBabies Pet Store MERN Stack Application with Complete User Management",
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
@@ -9,26 +9,69 @@
     "client": "cd client && npm start",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build": "cd client && npm run build",
+    "install-client": "cd client && npm install",
+    "heroku-postbuild": "npm run install-client && npm run build",
     "seed": "node server/scripts/seed.js",
-    "debug-login": "node server/scripts/debugLogin.js",
-    "format": "prettier --write \"**/*.{js,jsx,json,css,md}\""   
+    "seed:orders": "node server/scripts/seedOrders.js",
+    "seed:all": "npm run seed && npm run seed:orders",
+    "test:security": "node server/scripts/testPasswordSecurity.js",
+    "test:users": "node server/scripts/testUserController.js",
+    "test:password": "node server/scripts/testPasswordSecurity.js test-password",
+    "test:user-functions": "node server/scripts/testUserController.js user",
+    "generate:passwords": "node server/scripts/testPasswordSecurity.js generate",
+    "test:all": "npm run test:security && npm run test:users",
+    "lint": "eslint server --ext .js",
+    "format": "prettier --write server/**/*.js",
+    "debug:login": "node server/scripts/debugLogin.js",
+    "check:health": "curl http://localhost:5000/api/health",
+    "test-server": "node test-server.js"
   },
+  "keywords": [
+    "pet-store",
+    "mern-stack",
+    "react",
+    "express",
+    "mongodb",
+    "nodejs",
+    "pet-adoption",
+    "order-management",
+    "user-authentication",
+    "password-security",
+    "bcrypt",
+    "jwt"
+  ],
+  "author": "FurBabies Team",
+  "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "compression": "^1.7.4",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^4.21.2",
-    "express-rate-limit": "^7.5.1",
-    "express-validator": "^7.2.1",
-    "helmet": "^7.2.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.17.0",
-    "mongoose": "^7.8.7",
-    "morgan": "^1.10.0"
+    "mongoose": "^7.5.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2",
+    "concurrently": "^9.2.0",
+    "eslint": "^8.50.0",
     "nodemon": "^3.1.10",
-    "prettier": "^3.6.0"
-  }
+    "prettier": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/furbabies-petstore.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/furbabies-petstore/issues"
+  },
+  "homepage": "https://github.com/your-username/furbabies-petstore#readme"
 }

@@ -157,7 +157,7 @@ const pets = [
     price: 600,
     description:
       "Beautiful long-haired cat with a gentle personality. Requires regular grooming but very affectionate.",
-    image: "/images/Siamese.png",
+    image: "/images/Himalayan.jpg",
     size: "medium",
     gender: "female",
     available: true,

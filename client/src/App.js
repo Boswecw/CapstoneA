@@ -8,20 +8,20 @@ import {
 } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
 import LoadingSpinner from "./components/common/LoadingSpinner";
-import ErrorBoundary from "./components/ErrorBoundary";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ErrorBoundary from "./components/common/ErrorBoundary";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 // Import CSS
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 // Import critical pages directly (above the fold content)
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
+import Home from "./pages/public/Home";
+import About from "./pages/public/About";
+import Contact from "./pages/public/Contact";
 
 // Enhanced lazy loading with preloading hints
 const createLazyComponent = (importFunc, fallbackComponent) => {
@@ -58,17 +58,17 @@ const createFallbackPage = (
 
 // Lazy loaded components with intelligent fallbacks
 const Dogs = createLazyComponent(
-  () => import("./pages/Dogs"),
+  () => import("./pages/pet/Dogs"),
   createFallbackPage("fa-dog", "Dogs Page", "Our dogs page is coming soon!"),
 );
 
 const Cats = createLazyComponent(
-  () => import("./pages/Cats"),
+  () => import("./pages/pet/Cats"),
   createFallbackPage("fa-cat", "Cats Page", "Our cats page is coming soon!"),
 );
 
 const Aquatics = createLazyComponent(
-  () => import("./pages/Aquatics"),
+  () => import("./pages/pet/Aquatics"),
   createFallbackPage(
     "fa-fish",
     "Aquatics Page",
@@ -77,7 +77,7 @@ const Aquatics = createLazyComponent(
 );
 
 const Browse = createLazyComponent(
-  () => import("./pages/Browse"),
+  () => import("./pages/pet/Browse"),
   createFallbackPage(
     "fa-search",
     "Browse Pets",
@@ -86,7 +86,7 @@ const Browse = createLazyComponent(
 );
 
 const PetDetail = createLazyComponent(
-  () => import("./pages/PetDetail"),
+  () => import("./pages/pet/PetDetail"),
   createFallbackPage(
     "fa-heart",
     "Pet Details",
@@ -96,7 +96,7 @@ const PetDetail = createLazyComponent(
 );
 
 const Login = createLazyComponent(
-  () => import("./pages/Login"),
+  () => import("./pages/auth/Login"),
   () => (
     <div className="container py-5" style={{ marginTop: "80px" }}>
       <div className="row justify-content-center">
@@ -127,7 +127,7 @@ const Login = createLazyComponent(
 );
 
 const Register = createLazyComponent(
-  () => import("./pages/Register"),
+  () => import("./pages/auth/Register"),
   () => (
     <div className="container py-5" style={{ marginTop: "80px" }}>
       <div className="row justify-content-center">
@@ -154,7 +154,7 @@ const Register = createLazyComponent(
 );
 
 const Profile = createLazyComponent(
-  () => import("./pages/Profile"),
+  () => import("./pages/user/Profile"),
   () => (
     <div className="container py-5" style={{ marginTop: "80px" }}>
       <div className="row justify-content-center">
@@ -194,7 +194,7 @@ const Profile = createLazyComponent(
 );
 
 const Cart = createLazyComponent(
-  () => import("./pages/Cart"),
+  () => import("./pages/commerce/Cart"),
   () => (
     <div className="container py-5" style={{ marginTop: "80px" }}>
       <div className="row justify-content-center">
@@ -228,7 +228,7 @@ const Cart = createLazyComponent(
 );
 
 const Checkout = createLazyComponent(
-  () => import("./pages/Checkout"),
+  () => import("./pages/commerce/Checkout"),
   () => (
     <div className="container py-5" style={{ marginTop: "80px" }}>
       <div className="row justify-content-center">
@@ -269,7 +269,7 @@ const Checkout = createLazyComponent(
 );
 
 const AdminDashboard = createLazyComponent(
-  () => import("./components/AdminDashboard"),
+  () => import("./components/admin/AdminDashboard.js"),
   () => (
     <div className="container py-5" style={{ marginTop: "80px" }}>
       <div className="card">
@@ -342,7 +342,7 @@ const AdminDashboard = createLazyComponent(
 
 // FIXED: Products component with proper fallback (no server imports)
 const Products = createLazyComponent(
-  () => import("./pages/Products"),
+  () => import("./pages/commerce/Products"),
   () => (
     <div className="container py-5" style={{ marginTop: "80px" }}>
       <div className="text-center">
@@ -397,7 +397,7 @@ const Products = createLazyComponent(
 
 // FIXED: AddPet component with proper fallback
 const AddPet = createLazyComponent(
-  () => import("./pages/AddPet"),
+  () => import("./pages/user/AddPet"),
   () => (
     <div className="container py-5" style={{ marginTop: "80px" }}>
       <div className="row justify-content-center">
