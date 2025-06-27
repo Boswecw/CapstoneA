@@ -24,6 +24,7 @@ A modern pet adoption platform built with React and Node.js, helping connect lov
 - Node.js
 - Express.js
 - MongoDB with Mongoose
+- Google Buckets (for images)
 - JWT Authentication
 - CORS enabled
 
